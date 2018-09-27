@@ -1,0 +1,17 @@
+overrides:
+  - files: '**/__tests__/*.test.js'
+    env:
+      jest: true
+
+extends:
+  - eslint:recommended
+  - plugin:flowtype/recommended
+  - plugin:prettier/recommended
+
+parser: babel-eslint
+env:
+  node: true
+  es6: true
+
+parserOptions:
+  sourceType: module
