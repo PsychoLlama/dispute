@@ -6,9 +6,13 @@
   "scripts": {
     "test": "jest",
     "lint": "eslint src/**",
-    "precommit": "lint-staged",
     "build": "babel src/ -d dist/ --ignore __tests__",
     "prepublishOnly": "yarn -s build"
+  },
+  "husky": {
+    "hooks": {
+      "pre-commit": "lint-staged"
+    }
   },
   "lint-staged": {
     "*.js": [
