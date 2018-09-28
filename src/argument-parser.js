@@ -15,7 +15,7 @@ const getCommandAndArgs = (
 ): { command: CommandTree, args: string[] } => {
   let finalCommand = tree;
 
-  // Walk down the subcommand tree until the arguments
+  // Traverse the subcommand tree until the arguments
   // run out, or there isn't a subcommand by that name.
   for (const commandName of argv) {
     const { subCommands = {} } = finalCommand;

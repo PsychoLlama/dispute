@@ -19,16 +19,16 @@ describe('argument-parser', () => {
   });
 
   it('extracts nested commands', () => {
-    const setUrl = { command: () => {} };
-    const remote = { subCommands: { 'set-url': setUrl } };
+    const add = { command: () => {} };
+    const remote = { subCommands: { add } };
     const root = { subCommands: { remote } };
-    const result = parse(root, ['remote', 'set-url']);
+    const result = parse(root, ['remote', 'add']);
 
-    expect(result.command).toMatchObject(setUrl);
+    expect(result.command).toMatchObject(add);
   });
 
   it('parses arguments for root commands', () => {
-    const root = { arguments: '[commands...]' };
+    const root = { args: '[commands...]', command() {} };
     const args = ['eslint', '--fix'];
     const result = parse(root, args);
 
@@ -36,7 +36,7 @@ describe('argument-parser', () => {
   });
 
   it('parses arguments for nested commands', () => {
-    const branch = { arguments: '[new-branch]' };
+    const branch = { args: '[new-branch]', command() {} };
     const root = { subCommands: { branch } };
     const args = ['branch', 'new-branch'];
     const result = parse(root, args);

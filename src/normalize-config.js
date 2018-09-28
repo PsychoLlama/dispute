@@ -50,34 +50,41 @@ export default function normalizeConfig(
 
   // A tiny bit of validation.
   if (!command) {
-    const commandNamePreix = commandPath.length
-      ? 'config.subCommands.'
-      : 'config';
-
-    const commandName = `${commandNamePreix}${commandPath.join(
-      '.subCommands.'
-    )}`;
-
     assert(
       !args,
-      `Arguments were defined for a command that doesn't exist.\n` +
-        `  At: ${commandName}.args`
+      `Arguments were defined for a command that doesn't exist.` +
+        generateFieldTrace(commandPath, 'args')
     );
 
     assert(
       !config.options,
-      `Options were defined for a command that doesn't exist.\n` +
-        `  At: ${commandName}.options`
+      `Options were defined for a command that doesn't exist.` +
+        generateFieldTrace(commandPath, 'options')
     );
   }
 
   return {
     subCommands: normalizeSubcommands(subCommands, commandPath),
-    options: normalizeOptions(options),
+    options: normalizeOptions(options, commandPath),
     command,
     args,
   };
 }
+
+// Return a string like 'config.subCommands.init.options'.
+const describeConfigPath = (commandPath: string[]) => {
+  const commandNamePrefix = commandPath.length
+    ? 'config.subCommands.'
+    : 'config';
+
+  return `${commandNamePrefix}${commandPath.join('.subCommands.')}`;
+};
+
+const generateFieldTrace = (commandPath: string[], field: string) => {
+  const commandName = describeConfigPath(commandPath);
+
+  return `\n  At: ${commandName}.${field}`;
+};
 
 // Recursively apply normalizeConfig(...) to each subcommand.
 const normalizeSubcommands = (
@@ -97,7 +104,8 @@ const normalizeSubcommands = (
 
 // Add defaults to every option.
 const normalizeOptions = (
-  options: CommandOptionsLoose
+  options: CommandOptionsLoose,
+  commandPath: string[]
 ): CommandOptionsStrict => {
   const defaults = {
     parseValue: () => {},
@@ -106,6 +114,12 @@ const normalizeOptions = (
   const optionNames = Object.keys(options);
   return optionNames.reduce((commandOptions, optionName) => {
     const option = options[optionName];
+    assert(
+      option.usage,
+      `An option is missing the required '.usage' field.` +
+        generateFieldTrace(commandPath, `options.${optionName}`)
+    );
+
     commandOptions[optionName] = {
       ...defaults,
       ...option,

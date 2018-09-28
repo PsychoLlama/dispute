@@ -72,7 +72,7 @@ describe('normalize-config', () => {
     expect(options).toThrow(/options/i);
   });
 
-  it('shows the path to the invalid subcommand', () => {
+  it('shows the full path to the invalid subcommand', () => {
     const config = {
       subCommands: {
         init: {
@@ -86,5 +86,17 @@ describe('normalize-config', () => {
     const fail = () => normalize(config);
 
     expect(fail).toThrow(/init\.subCommands\.cli/);
+  });
+
+  it('throws if an option is missing usage', () => {
+    const fail = () =>
+      normalize({
+        command() {},
+        options: {
+          quiet: ({}: any),
+        },
+      });
+
+    expect(fail).toThrow(/config.options.quiet/i);
   });
 });
