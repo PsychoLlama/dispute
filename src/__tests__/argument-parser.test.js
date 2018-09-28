@@ -1,5 +1,8 @@
 // @flow
-import parse from '../argument-parser';
+import normalizeConfig from '../normalize-config';
+import parseArguments from '../argument-parser';
+
+const parse = (config, argv) => parseArguments(normalizeConfig(config), argv);
 
 describe('argument-parser', () => {
   it('returns an object', () => {
@@ -9,10 +12,10 @@ describe('argument-parser', () => {
   });
 
   it('pulls the root command if no command is given', () => {
-    const root = {};
+    const root = { command() {} };
     const result = parse(root, []);
 
-    expect(result.command).toBe(root);
+    expect(result.command.command).toBe(root.command);
   });
 
   it('extracts nested commands', () => {
@@ -21,7 +24,7 @@ describe('argument-parser', () => {
     const root = { subCommands: { remote } };
     const result = parse(root, ['remote', 'set-url']);
 
-    expect(result.command).toBe(setUrl);
+    expect(result.command).toMatchObject(setUrl);
   });
 
   it('parses arguments for root commands', () => {

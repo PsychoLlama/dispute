@@ -1,5 +1,5 @@
 // @flow
-import type { CommandTree } from './cli-factory';
+import type { CommandTree } from './normalize-config';
 
 type Argv = string[];
 type ParsedOptions = { [string]: mixed };
