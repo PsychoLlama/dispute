@@ -141,24 +141,6 @@ describe('Tokenizer', () => {
     });
   });
 
-  it('indicates if the argument is variadic', () => {
-    const tokenizer = createTokenizer(createStream('--from <files...>'));
-    tokenizer.consumeNextToken();
-
-    expect(tokenizer.peek()).toMatchObject({
-      variadic: true,
-      name: 'files',
-    });
-  });
-
-  it('throws if variadic syntax is invalid', () => {
-    const tokenizer = createTokenizer(createStream('--from <files.>'));
-    tokenizer.consumeNextToken();
-
-    const fail = () => tokenizer.peek();
-    expect(fail).toThrow(/expected/i);
-  });
-
   it('throws if the trailing argument syntax is omitted', () => {
     const tokenizer = createTokenizer(createStream('--from <files'));
     tokenizer.consumeNextToken();
@@ -168,7 +150,7 @@ describe('Tokenizer', () => {
   });
 
   it('works with wonky whitespace', () => {
-    const input = '   --from    [files...]    ';
+    const input = '   --from    [files]    ';
     const tokenizer = createTokenizer(createStream(input));
     expect(tokenizer.consumeNextToken().type).toBe('LongFlag');
     expect(tokenizer.consumeNextToken().type).toBe('Argument');
@@ -176,11 +158,11 @@ describe('Tokenizer', () => {
   });
 
   it('contains the raw argument string', () => {
-    const tokenizer = createTokenizer(createStream('-p <port...>'));
+    const tokenizer = createTokenizer(createStream('-p <port>'));
     tokenizer.consumeNextToken();
 
     expect(tokenizer.peek()).toMatchObject({
-      raw: '<port...>',
+      raw: '<port>',
     });
   });
 

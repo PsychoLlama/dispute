@@ -17,7 +17,6 @@ type LongFlag = {
 
 type Argument = {
   type: 'Argument',
-  variadic: boolean,
   required: boolean,
   raw: string,
   loc: Loc,
@@ -50,6 +49,7 @@ export default function createTokenizer(inputStream: InputStream) {
 
   const discardWhitespace = () => readWhile(char => /\s/.test(char));
 
+  // Reads a longer CLI flag like (e.g. --color).
   const readLongFlag = (loc: Loc): LongFlag => {
     inputStream.consumeNextChar();
     const flagName = readWhile(char => /\w/.test(char));
@@ -115,7 +115,15 @@ export default function createTokenizer(inputStream: InputStream) {
     return inputStream.peek() === char;
   };
 
+  // Assert the next character matches the given string.
   const expect = expected => {
+    if (inputStream.eof()) {
+      throw inputStream.generateError({
+        message: `Usage string ended abruptly (expected "${expected}").`,
+        loc: inputStream.getLoc(),
+      });
+    }
+
     const actual = inputStream.consumeNextChar();
 
     if (actual !== expected) {
@@ -128,12 +136,9 @@ export default function createTokenizer(inputStream: InputStream) {
     return actual;
   };
 
-  const discardVariadicArgs = () => expect('.') + expect('.') + expect('.');
-
   // Option argument, e.g.:
   // - <required-arg>
   // - [optional]
-  // - <required-variadic...>
   const isArgument = () => isChar('<') || isChar('[');
   const readArgument = (): Argument => {
     const loc = inputStream.getLoc();
@@ -143,17 +148,12 @@ export default function createTokenizer(inputStream: InputStream) {
     raw += inputStream.consumeNextChar();
 
     const argName = readWhile(char => /[\w-]/.test(char));
-    raw += argName;
-
-    const variadic = isChar('.');
-    if (variadic) raw += discardVariadicArgs();
-    raw += expect(required ? '>' : ']');
+    raw += argName + expect(required ? '>' : ']');
 
     return {
       type: 'Argument',
       name: argName,
       required,
-      variadic,
       raw,
       loc,
     };
