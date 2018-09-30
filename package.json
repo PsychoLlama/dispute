@@ -1,7 +1,7 @@
 {
-  "name": "db8",
+  "name": "dispute",
   "version": "0.1.0",
-  "description": "",
+  "description": "Command line argument parser",
   "main": "dist/index.js",
   "scripts": {
     "test": "jest",
@@ -20,13 +20,10 @@
       "git add"
     ]
   },
-  "repository": {
-    "type": "git",
-    "url": "http://git/PsychoLlama/db8.git"
-  },
+  "repository": "https://github.com/PsychoLlama/dispute.git",
   "keywords": [],
-  "author": "",
-  "license": "ISC",
+  "author": "Jesse Gibson <JesseTheGibson@gmail.com>",
+  "license": "MIT",
   "devDependencies": {
     "babel-cli": "^6.26.0",
     "babel-eslint": "^10.0.1",
@@ -44,5 +41,6 @@
   },
   "dependencies": {
     "minimalistic-assert": "^1.0.1"
-  }
+  },
+  "private": false
 }
