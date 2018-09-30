@@ -20,6 +20,9 @@
       "git add"
     ]
   },
+  "engines": {
+    "node": ">=6.0.0"
+  },
   "repository": "https://github.com/PsychoLlama/dispute.git",
   "keywords": [],
   "author": "Jesse Gibson <JesseTheGibson@gmail.com>",
