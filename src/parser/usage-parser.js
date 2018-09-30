@@ -49,7 +49,7 @@ export default function parseUsage(usageString: string): Usage {
     if (!nextTokenSatisfiesExpectations) {
       const nextToken = tokenizer.peek();
       const message =
-        `Expected {${types.join(', ')}}.\n` +
+        `Expected {${types.join(', ')}}. ` +
         `This ain't that (it's "${nextToken.type}").`;
 
       throw tokenizer.reportToken(nextToken, message);

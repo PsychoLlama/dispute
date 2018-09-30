@@ -1,5 +1,8 @@
 // @flow
-import createStream from '../input-stream';
+import createStream, {
+  addLeftPadding,
+  createErrorFrame,
+} from '../input-stream';
 
 describe('Input stream', () => {
   it('returns an interface', () => {
@@ -72,7 +75,7 @@ describe('Input stream', () => {
     expect(consumptionFail).toThrow(/end/i);
   });
 
-  it('throws an error on report', () => {
+  it('generates an error on request', () => {
     const stream = createStream('something');
     const message = 'Testing `.generateError(...)`';
     const error = stream.generateError({
@@ -82,5 +85,61 @@ describe('Input stream', () => {
 
     expect(error).toEqual(expect.any(SyntaxError));
     expect(error.message).toContain(message);
+  });
+
+  describe('createErrorFrame()', () => {
+    it('highlights the offending character', () => {
+      const frame = createErrorFrame({
+        loc: { column: 0, line: 0 },
+        sourceText: '-q',
+        length: 1,
+      });
+
+      const lines = frame.split('\n');
+      expect(lines).toHaveLength(2);
+      expect(lines[1]).toMatch(/\^{1}/);
+    });
+
+    it('stretches the highlight for the given length', () => {
+      const frame = createErrorFrame({
+        loc: { column: 0, line: 0 },
+        sourceText: '--quiet',
+        length: 7,
+      });
+
+      const highlight = frame.split('\n')[1];
+      expect(highlight).toMatch(/\^{7}/);
+    });
+
+    it('applies the column offset', () => {
+      const frame = createErrorFrame({
+        loc: { column: 4, line: 0 },
+        sourceText: '-q, --quiet',
+        length: 7,
+      });
+
+      const lines = frame.split('\n');
+      expect(lines[1]).toMatch(/^\s{4}/);
+    });
+  });
+
+  describe('addLeftPadding', () => {
+    it('can pad a single line', () => {
+      const content = addLeftPadding(2, 'hello');
+
+      expect(content).toBe('  hello');
+    });
+
+    it('can pad multiple lines', () => {
+      const content = addLeftPadding(2, 'line1\nline2');
+
+      expect(content).toBe('  line1\n  line2');
+    });
+
+    it('can pad any amount', () => {
+      const content = addLeftPadding(4, 'line');
+
+      expect(content).toBe('    line');
+    });
   });
 });

@@ -1,4 +1,6 @@
 // @flow
+import chalk from 'chalk';
+
 export type Loc = {
   column: number,
   line: number,
@@ -17,6 +19,39 @@ export interface InputStream {
   eof(): boolean;
   getLoc(): Loc;
 }
+
+type FrameDetails = {
+  sourceText: string,
+  length: number,
+  loc: Loc,
+};
+
+export const addLeftPadding = (offset: number, text: string) => {
+  const offsetString = Array(offset)
+    .fill(' ')
+    .join('');
+
+  return text
+    .split('\n')
+    .map(line => offsetString + line)
+    .join('\n');
+};
+
+export const createErrorFrame = (frame: FrameDetails) => {
+  const offset = Array(frame.loc.column)
+    .fill(' ')
+    .join('');
+
+  // Generate a syntax highlight.
+  // Something like '  ^^^^^^^^^'
+  const underline = Array(frame.length)
+    .fill('^')
+    .join('');
+
+  const highlight = offset + chalk.red(underline);
+
+  return frame.sourceText + '\n' + highlight;
+};
 
 export default function createStream(sourceText: string) {
   let cursor = 0;
@@ -41,7 +76,15 @@ export default function createStream(sourceText: string) {
     },
 
     generateError(report) {
-      return new SyntaxError(report.message);
+      const frame = createErrorFrame({
+        length: report.length || 1,
+        loc: report.loc,
+        sourceText,
+      });
+
+      return new SyntaxError(
+        `${report.message}\n\n${addLeftPadding(2, frame)}\n`
+      );
     },
 
     peek() {
