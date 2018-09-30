@@ -11,9 +11,10 @@ type ErrorReport = {
 };
 
 export interface InputStream {
-  reportError(ErrorReport): ?string;
-  consumeNextChar(): ?string;
-  peek(): ?string;
+  generateError(ErrorReport): SyntaxError;
+  consumeNextChar(): string;
+  peek(): string;
+  eof(): boolean;
   getLoc(): Loc;
 }
 
@@ -23,6 +24,7 @@ export default function createStream(sourceText: string) {
   let line = 0;
 
   const controls: InputStream = {
+    eof: () => cursor === sourceText.length,
     getLoc: () => ({ line, column }),
     consumeNextChar() {
       const character = this.peek();
@@ -37,12 +39,19 @@ export default function createStream(sourceText: string) {
 
       return character;
     },
-    reportError(report) {
-      throw new SyntaxError(report.message);
+
+    generateError(report) {
+      return new SyntaxError(report.message);
     },
+
     peek() {
-      const character = sourceText[cursor];
-      return character || null;
+      if (this.eof()) {
+        throw new RangeError(
+          'Attempted to read past the end of the source text'
+        );
+      }
+
+      return sourceText[cursor];
     },
   };
 

@@ -8,7 +8,8 @@ describe('Input stream', () => {
     const stream = createStream('yolo');
     expect(stream.peek).toEqual(expect.any(Function));
     expect(stream.consumeNextChar).toEqual(expect.any(Function));
-    expect(stream.reportError).toEqual(expect.any(Function));
+    expect(stream.generateError).toEqual(expect.any(Function));
+    expect(stream.eof).toEqual(expect.any(Function));
   });
 
   it('consumes the text one character at a time', () => {
@@ -18,7 +19,6 @@ describe('Input stream', () => {
     expect(stream.consumeNextChar()).toBe('e');
     expect(stream.consumeNextChar()).toBe('x');
     expect(stream.consumeNextChar()).toBe('t');
-    expect(stream.consumeNextChar()).toBe(null);
   });
 
   it('has no effect while peeking at the next character', () => {
@@ -37,8 +37,6 @@ describe('Input stream', () => {
 
     stream.consumeNextChar();
     stream.consumeNextChar();
-    expect(stream.peek()).toBe(null);
-    expect(stream.peek()).toBe(null);
   });
 
   it('returns the correct line and column', () => {
@@ -55,20 +53,34 @@ describe('Input stream', () => {
     expect(stream.getLoc()).toEqual({ line: 1, column: 1 });
   });
 
+  it('indicates if the end has been reached', () => {
+    const stream = createStream('a');
+
+    expect(stream.eof()).toBe(false);
+    stream.consumeNextChar();
+    expect(stream.eof()).toBe(true);
+  });
+
+  it('throws if the stream is read past its limit', () => {
+    const stream = createStream('a');
+    stream.consumeNextChar();
+
+    const peekFail = () => stream.peek();
+    const consumptionFail = () => stream.consumeNextChar();
+
+    expect(peekFail).toThrow(/end/i);
+    expect(consumptionFail).toThrow(/end/i);
+  });
+
   it('throws an error on report', () => {
     const stream = createStream('something');
-    const message = 'Testing `.reportError(...)`';
-    const fail = () =>
-      stream.reportError({
-        loc: { column: 0, line: 0 },
-        message,
-      });
+    const message = 'Testing `.generateError(...)`';
+    const error = stream.generateError({
+      loc: { column: 0, line: 0 },
+      message,
+    });
 
-    expect(fail).toThrow(SyntaxError);
-    expect(fail).toThrow(
-      expect.objectContaining({
-        message: expect.stringContaining(message),
-      })
-    );
+    expect(error).toEqual(expect.any(SyntaxError));
+    expect(error.message).toContain(message);
   });
 });

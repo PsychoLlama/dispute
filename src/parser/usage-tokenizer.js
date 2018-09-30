@@ -29,8 +29,9 @@ type ErrorReport = Token & { message: string };
 
 export interface Tokenizer {
   reportToken(ErrorReport): void;
-  consumeNextToken(): ?Token;
-  peek(): ?Token;
+  consumeNextToken(): Token;
+  eof(): boolean;
+  peek(): Token;
 }
 
 export default function createTokenizer(inputStream: InputStream) {
@@ -38,12 +39,10 @@ export default function createTokenizer(inputStream: InputStream) {
 
   // Continue reading the source string until the predicate is unsatisfied.
   const readWhile = (predicate: (nextChar: string, acc: string) => boolean) => {
-    let nextChar;
     let acc = '';
 
-    while ((nextChar = inputStream.peek()) && predicate(nextChar, acc)) {
-      inputStream.consumeNextChar();
-      acc += nextChar;
+    while (!inputStream.eof() && predicate(inputStream.peek(), acc)) {
+      acc += inputStream.consumeNextChar();
     }
 
     return acc;
@@ -64,21 +63,24 @@ export default function createTokenizer(inputStream: InputStream) {
     };
   };
 
+  // Shorthand flags, like "$ cmd -q -s".
   const readShortFlag = (loc: Loc): ShortFlag => {
     const flagName = readWhile(char => /\w/.test(char));
     const raw = `-${flagName}`;
 
     if (!/\w/.test(flagName)) {
-      inputStream.reportError({
+      throw inputStream.generateError({
         message: `Expected a flag name, found "${flagName}".`,
+        length: flagName.length,
         loc,
       });
     }
 
     // The user passed something terrible like "-name" or "-port".
     if (!/^\d+$/.test(flagName) && flagName.length > 1) {
-      inputStream.reportError({
+      throw inputStream.generateError({
         message: `Only one short flag is allowed per usage definition.`,
+        length: flagName.length,
         loc,
       });
     }
@@ -91,17 +93,78 @@ export default function createTokenizer(inputStream: InputStream) {
     };
   };
 
-  const isFlag = char => char === '-';
+  const isFlag = () => isChar('-');
   const readFlag = (): ShortFlag | LongFlag => {
     const loc = inputStream.getLoc();
     inputStream.consumeNextChar();
 
     // Two hyphens back to back can only mean one thing.
-    if (inputStream.peek() === '-') return readLongFlag(loc);
+    if (isChar('-')) return readLongFlag(loc);
     return readShortFlag(loc);
   };
 
+  // Safely peek at the next character.
+  const isChar = char => {
+    if (inputStream.eof()) {
+      throw inputStream.generateError({
+        message: `Usage string ended unexpectedly (looking for "${char}").`,
+        loc: inputStream.getLoc(),
+      });
+    }
+
+    return inputStream.peek() === char;
+  };
+
+  const expect = expected => {
+    const actual = inputStream.consumeNextChar();
+
+    if (actual !== expected) {
+      throw inputStream.generateError({
+        message: `Expected a "${expected}" character, got "${actual}".`,
+        loc: inputStream.getLoc(),
+      });
+    }
+
+    return actual;
+  };
+
+  const discardVariadicArgs = () => expect('.') + expect('.') + expect('.');
+
+  // Option argument, e.g.:
+  // - <required-arg>
+  // - [optional]
+  // - <required-variadic...>
+  const isArgument = () => isChar('<') || isChar('[');
+  const readArgument = (): Argument => {
+    const loc = inputStream.getLoc();
+    let raw = '';
+
+    const required = isChar('<');
+    raw += inputStream.consumeNextChar();
+
+    const argName = readWhile(char => /[\w-]/.test(char));
+    raw += argName;
+
+    const variadic = isChar('.');
+    if (variadic) raw += discardVariadicArgs();
+    raw += expect(required ? '>' : ']');
+
+    return {
+      type: 'Argument',
+      name: argName,
+      required,
+      variadic,
+      raw,
+      loc,
+    };
+  };
+
   const controls: Tokenizer = {
+    eof: () => {
+      discardWhitespace();
+      return inputStream.eof();
+    },
+
     consumeNextToken() {
       if (peekedToken) {
         const result = peekedToken;
@@ -110,14 +173,24 @@ export default function createTokenizer(inputStream: InputStream) {
         return result;
       }
 
-      discardWhitespace();
-      const nextChar = inputStream.peek();
+      if (inputStream.eof()) {
+        throw new RangeError('End of input reached');
+      }
 
-      if (isFlag(nextChar)) return readFlag();
+      discardWhitespace();
+
+      if (isFlag()) return readFlag();
+      if (isArgument()) return readArgument();
+
+      // Workaround for Flow. It doesn't know about assertions.
+      throw inputStream.generateError({
+        message: `Unexpected character "${inputStream.peek()}"`,
+        loc: inputStream.getLoc(),
+      });
     },
 
     reportToken(token) {
-      inputStream.reportError({
+      throw inputStream.generateError({
         ...token,
         length: token.raw.length,
       });
