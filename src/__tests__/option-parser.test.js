@@ -30,6 +30,13 @@ describe('option-parser', () => {
     expect(result.options.quiet).toBe(true);
   });
 
+  it('survives if the option is unrecognized', () => {
+    const root = { command() {}, options };
+    const result = parse(root, ['-b']);
+
+    expect(result.options).toEqual({});
+  });
+
   it.skip('throws if several options share the same usage', () => {});
 
   describe('parseOptionUsage()', () => {

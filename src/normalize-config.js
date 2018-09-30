@@ -1,6 +1,9 @@
 // @flow
 import assert from 'minimalistic-assert';
 
+/* istanbul ignore next */
+const noop = () => {};
+
 type Options = {};
 type Command = (options: Options) => mixed;
 
@@ -108,7 +111,7 @@ const normalizeOptions = (
   commandPath: string[]
 ): CommandOptionsStrict => {
   const defaults = {
-    parseValue: () => {},
+    parseValue: noop,
   };
 
   const optionNames = Object.keys(options);

@@ -1,6 +1,7 @@
 // @flow
 module.exports = {
-  testMatch: ['**/src/**/__tests__/*.test.js'],
+  testMatch: ['<rootDir>/src/**/__tests__/*.test.js'],
+  collectCoverageFrom: ['<rootDir>/src/**/*.{js,jsx}', '!**/node_modules/**'],
   coverageReporters: ['html'],
   testEnvironment: 'node',
   collectCoverage: true,

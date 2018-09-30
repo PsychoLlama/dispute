@@ -38,6 +38,20 @@ describe('Tokenizer', () => {
     expect(fail).toThrow(/end/i);
   });
 
+  it('survives if the input unexpectedly ends', () => {
+    const tokenizer = createTokenizer(createStream('-'));
+    const fail = () => tokenizer.consumeNextToken();
+
+    expect(fail).toThrow(/end/i);
+  });
+
+  it('complains if the delimiters are mismatched', () => {
+    const tokenizer = createTokenizer(createStream('<arg]'));
+    const fail = () => tokenizer.consumeNextToken();
+
+    expect(fail).toThrow(/\]/i);
+  });
+
   it('parses short options', () => {
     const tokenizer = createTokenizer(createStream('-q'));
     const token = tokenizer.peek();

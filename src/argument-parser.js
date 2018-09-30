@@ -18,7 +18,7 @@ const getCommandAndArgs = (
   // Traverse the subcommand tree until the arguments
   // run out, or there isn't a subcommand by that name.
   for (const commandName of argv) {
-    const { subCommands = {} } = finalCommand;
+    const { subCommands } = finalCommand;
     if (!subCommands.hasOwnProperty(commandName)) {
       break;
     }

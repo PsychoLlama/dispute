@@ -28,7 +28,6 @@ export default function parseUsage(usageString: string): Usage {
   const isFlag = () => isShortFlag() || isLongFlag();
   const expectCommaBetweenFlags = () => {
     if (tokenizer.eof() || !isFlag()) return null;
-    if (!usage.long && !usage.short) return null;
 
     const token = tokenizer.peek();
     throw tokenizer.reportToken(
@@ -69,11 +68,9 @@ export default function parseUsage(usageString: string): Usage {
     );
   };
 
-  // Safer form of `.peek(...)`.
+  // More convenient form of `.peek(...)`.
   const isType = (type: string) => {
-    if (tokenizer.eof()) return false;
     const token = tokenizer.peek();
-
     return token.type === type;
   };
 
@@ -127,8 +124,11 @@ export default function parseUsage(usageString: string): Usage {
     if (isShortFlag()) return readShortFlag();
     if (isLongFlag()) return readLongFlag();
     if (isPunctuation()) return readPunctuation();
+
+    /* istanbul ignore else */
     if (isArgument()) return readArgument();
 
+    /* istanbul ignore next */
     throw new Error(
       `Haha, so, funny story, a token walks into a bar but it isn't a bar it's actually a usage parser that has no idea how to serve the token so it's kinda freaking out. Would you kindly post an issue? (token: ${JSON.stringify(
         tokenizer.peek()
