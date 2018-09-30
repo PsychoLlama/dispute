@@ -8,7 +8,7 @@ import createTokenizer, {
   type Punctuation,
 } from './usage-tokenizer';
 
-type Usage = {
+export type Usage = {
   short: ?string,
   long: ?string,
   argument: ?{
@@ -64,7 +64,7 @@ export default function parseUsage(usageString: string): Usage {
 
     throw tokenizer.reportToken(
       token,
-      `Each option is only allowed on ${typeName}.`
+      `Each option is only allowed one ${typeName}.`
     );
   };
 

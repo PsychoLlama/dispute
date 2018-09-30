@@ -1,6 +1,8 @@
 // @flow
 import assert from 'minimalistic-assert';
 
+import parseUsage, { type Usage } from './parser/usage-parser';
+
 /* istanbul ignore next */
 const noop = () => {};
 
@@ -10,7 +12,6 @@ type Command = (options: Options) => mixed;
 type CommandOption = {
   parseValue?: ParseValue,
   description?: string,
-  usage: string,
 };
 
 // TODO: figure out how this should work.
@@ -20,12 +21,12 @@ type Subcommands<Subcommand> = {
   [commandName: string]: Subcommand,
 };
 
-type CommandOptions<ParseValue: Object> = {
-  [optionName: string]: CommandOption & ParseValue,
+type CommandOptions<ParseValue: Object, Usage> = {
+  [optionName: string]: CommandOption & ParseValue & { usage: Usage },
 };
 
 // Loose type. Allows undefined fields.
-type CommandOptionsLoose = CommandOptions<{ parseValue?: ParseValue }>;
+type CommandOptionsLoose = CommandOptions<{ parseValue?: ParseValue }, string>;
 type Config = {
   subCommands?: Subcommands<Config>,
   options?: CommandOptionsLoose,
@@ -34,7 +35,7 @@ type Config = {
 };
 
 // Strict type. All fields must have defaults.
-type CommandOptionsStrict = CommandOptions<{ parseValue: ParseValue }>;
+type CommandOptionsStrict = CommandOptions<{ parseValue: ParseValue }, Usage>;
 export type CommandTree = {|
   subCommands: Subcommands<CommandTree>,
   options: CommandOptionsStrict,
@@ -126,6 +127,7 @@ const normalizeOptions = (
     commandOptions[optionName] = {
       ...defaults,
       ...option,
+      usage: parseUsage(option.usage),
     };
 
     return commandOptions;

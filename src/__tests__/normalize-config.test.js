@@ -27,7 +27,6 @@ describe('normalize-config', () => {
     const result = normalize(config);
 
     expect(result.subCommands).toMatchObject(config.subCommands);
-    expect(result.options).toMatchObject(config.options);
     expect(result.args).toBe(config.args);
   });
 
@@ -60,6 +59,11 @@ describe('normalize-config', () => {
 
     expect(result.options.quiet).toEqual({
       ...quiet,
+      usage: {
+        argument: null,
+        long: null,
+        short: 'q',
+      },
       parseValue: expect.any(Function),
     });
   });
@@ -98,5 +102,21 @@ describe('normalize-config', () => {
       });
 
     expect(fail).toThrow(/config.options.quiet/i);
+  });
+
+  it('parses option usage', () => {
+    const quiet = { usage: '-v, --verbose=[bool]' };
+    const config = {
+      options: { quiet },
+      command() {},
+    };
+
+    const result = normalize(config);
+
+    expect(result.options.quiet.usage).toMatchObject({
+      argument: { required: false, name: 'bool' },
+      long: 'verbose',
+      short: 'v',
+    });
   });
 });
