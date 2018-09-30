@@ -60,8 +60,7 @@ describe('Input stream', () => {
     const message = 'Testing `.reportError(...)`';
     const fail = () =>
       stream.reportError({
-        column: 0,
-        line: 0,
+        loc: { column: 0, line: 0 },
         message,
       });
 

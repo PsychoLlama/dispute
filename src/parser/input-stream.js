@@ -1,11 +1,13 @@
 // @flow
-type Loc = {
+export type Loc = {
   column: number,
   line: number,
 };
 
-type ErrorReport = Loc & {
+type ErrorReport = {
   message: string,
+  length?: number,
+  loc: Loc,
 };
 
 export interface InputStream {
