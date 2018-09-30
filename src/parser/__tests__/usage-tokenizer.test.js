@@ -16,17 +16,13 @@ describe('Tokenizer', () => {
     const tokenizer = createTokenizer(stream);
     const mockError = new Error('Generated error');
     jest.spyOn(stream, 'generateError').mockReturnValue(mockError);
-    const token = {
-      message: 'Testing `.generateError(...)`',
-      loc: { line: 0, column: 0 },
-      type: 'ShortFlag',
-      name: 'q',
-      raw: '-q',
-    };
 
-    const fail = () => tokenizer.reportToken(token);
+    const message = 'Testing `.generateError(...)`';
+    const loc = { line: 0, column: 0 };
+    const token = { loc, raw: '-q', message };
+    const error = tokenizer.reportToken(token, message);
 
-    expect(fail).toThrow(mockError);
+    expect(error).toBe(mockError);
     expect(stream.generateError).toHaveBeenCalledWith({
       ...token,
       length: token.raw.length,
@@ -71,6 +67,15 @@ describe('Tokenizer', () => {
     const token = tokenizer.peek();
 
     expect(token).toMatchObject({ name: 'q' });
+  });
+
+  it('allows long flags containing hyphens', () => {
+    const tokenizer = createTokenizer(createStream('--no-color'));
+
+    expect(tokenizer.peek()).toMatchObject({
+      raw: '--no-color',
+      name: 'no-color',
+    });
   });
 
   it('stays in the same spot while peeking at the next token', () => {
@@ -157,6 +162,16 @@ describe('Tokenizer', () => {
     expect(tokenizer.eof()).toBe(true);
   });
 
+  // Includes `.peek(...)`.
+  it('only reports eof if all tokens have been exhausted', () => {
+    const tokenizer = createTokenizer(createStream('-p'));
+
+    tokenizer.peek();
+    expect(tokenizer.eof()).toBe(false);
+    tokenizer.consumeNextToken();
+    expect(tokenizer.eof()).toBe(true);
+  });
+
   it('contains the raw argument string', () => {
     const tokenizer = createTokenizer(createStream('-p <port>'));
     tokenizer.consumeNextToken();
@@ -173,24 +188,27 @@ describe('Tokenizer', () => {
     expect(fail).toThrow(/@/);
   });
 
-  it('works with the "=" argument form', () => {
-    const tokenizer = createTokenizer(createStream('--color=[toggle]'));
+  it('emits a punctuation token for the equals sign', () => {
+    const tokenizer = createTokenizer(createStream('-p=<number>'));
 
+    expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'ShortFlag' });
     expect(tokenizer.consumeNextToken()).toMatchObject({
-      type: 'LongFlag',
-      name: 'color',
+      type: 'Punctuation',
+      value: '=',
     });
 
-    expect(tokenizer.consumeNextToken()).toMatchObject({
-      type: 'Argument',
-      name: 'toggle',
-    });
+    expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'Argument' });
   });
 
-  it('allows long and shorthand flags in the same string', () => {
+  it('emits commas as punctuation tokens', () => {
     const tokenizer = createTokenizer(createStream('-p, --port <number>'));
 
     expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'ShortFlag' });
+    expect(tokenizer.consumeNextToken()).toMatchObject({
+      type: 'Punctuation',
+      value: ',',
+    });
+
     expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'LongFlag' });
     expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'Argument' });
   });

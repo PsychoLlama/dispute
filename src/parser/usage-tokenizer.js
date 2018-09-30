@@ -1,33 +1,41 @@
 // @flow
 import type { InputStream, Loc } from './input-stream';
 
-type ShortFlag = {
+export type ShortFlag = {
   type: 'ShortFlag',
   name: string,
   raw: string,
   loc: Loc,
 };
 
-type LongFlag = {
+export type LongFlag = {
   type: 'LongFlag',
   name: string,
   raw: string,
   loc: Loc,
 };
 
-type Argument = {
+export type Argument = {
   type: 'Argument',
   required: boolean,
+  name: string,
   raw: string,
   loc: Loc,
 };
 
-type Token = ShortFlag | LongFlag | Argument;
+export type Punctuation = {
+  type: 'Punctuation',
+  value: string,
+  raw: string,
+  loc: Loc,
+};
 
-type ErrorReport = Token & { message: string };
+export type Token = ShortFlag | LongFlag | Punctuation | Argument;
+
+type ErrorReport = { loc: Loc, raw: string };
 
 export interface Tokenizer {
-  reportToken(ErrorReport): void;
+  reportToken(ErrorReport, message: string): SyntaxError;
   consumeNextToken(): Token;
   eof(): boolean;
   peek(): Token;
@@ -52,7 +60,7 @@ export default function createTokenizer(inputStream: InputStream) {
   // Reads a longer CLI flag like (e.g. --color).
   const readLongFlag = (loc: Loc): LongFlag => {
     inputStream.consumeNextChar();
-    const flagName = readWhile(char => /\w/.test(char));
+    const flagName = readWhile(char => /[\w-]/.test(char));
     const raw = `--${flagName}`;
 
     return {
@@ -93,16 +101,8 @@ export default function createTokenizer(inputStream: InputStream) {
     };
   };
 
-  const ignore = char => {
-    if (isChar(char)) return inputStream.consumeNextChar();
-    return '';
-  };
-
-  const isFlag = () => isChar('-') || isChar(',');
+  const isFlag = () => isChar('-');
   const readFlag = (): ShortFlag | LongFlag => {
-    ignore(',');
-    discardWhitespace();
-
     const loc = inputStream.getLoc();
     inputStream.consumeNextChar();
 
@@ -144,14 +144,24 @@ export default function createTokenizer(inputStream: InputStream) {
     return actual;
   };
 
+  const isPunctuation = () => isChar('=') || isChar(',');
+  const readPunctuation = (): Punctuation => {
+    const loc = inputStream.getLoc();
+    const value = inputStream.consumeNextChar();
+    return {
+      type: 'Punctuation',
+      raw: value,
+      value,
+      loc,
+    };
+  };
+
   // Option argument, e.g.:
   // - --flag <required-arg>
   // - --flag [optional]
   // - --flag=[value]
-  const isArgument = () => isChar('<') || isChar('[') || isChar('=');
+  const isArgument = () => isChar('<') || isChar('[');
   const readArgument = (): Argument => {
-    ignore('=');
-
     const loc = inputStream.getLoc();
     let raw = '';
 
@@ -172,6 +182,8 @@ export default function createTokenizer(inputStream: InputStream) {
 
   const controls: Tokenizer = {
     eof: () => {
+      if (peekedToken) return false;
+
       discardWhitespace();
       return inputStream.eof();
     },
@@ -190,6 +202,7 @@ export default function createTokenizer(inputStream: InputStream) {
 
       discardWhitespace();
 
+      if (isPunctuation()) return readPunctuation();
       if (isFlag()) return readFlag();
       if (isArgument()) return readArgument();
 
@@ -200,10 +213,11 @@ export default function createTokenizer(inputStream: InputStream) {
       });
     },
 
-    reportToken(token) {
-      throw inputStream.generateError({
+    reportToken(token, message) {
+      return inputStream.generateError({
         ...token,
         length: token.raw.length,
+        message,
       });
     },
 
