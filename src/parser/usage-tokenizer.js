@@ -93,8 +93,16 @@ export default function createTokenizer(inputStream: InputStream) {
     };
   };
 
-  const isFlag = () => isChar('-');
+  const ignore = char => {
+    if (isChar(char)) return inputStream.consumeNextChar();
+    return '';
+  };
+
+  const isFlag = () => isChar('-') || isChar(',');
   const readFlag = (): ShortFlag | LongFlag => {
+    ignore(',');
+    discardWhitespace();
+
     const loc = inputStream.getLoc();
     inputStream.consumeNextChar();
 
@@ -137,15 +145,18 @@ export default function createTokenizer(inputStream: InputStream) {
   };
 
   // Option argument, e.g.:
-  // - <required-arg>
-  // - [optional]
-  const isArgument = () => isChar('<') || isChar('[');
+  // - --flag <required-arg>
+  // - --flag [optional]
+  // - --flag=[value]
+  const isArgument = () => isChar('<') || isChar('[') || isChar('=');
   const readArgument = (): Argument => {
+    ignore('=');
+
     const loc = inputStream.getLoc();
     let raw = '';
 
     const required = isChar('<');
-    raw += inputStream.consumeNextChar();
+    raw += expect(required ? '<' : '[');
 
     const argName = readWhile(char => /[\w-]/.test(char));
     raw += argName + expect(required ? '>' : ']');

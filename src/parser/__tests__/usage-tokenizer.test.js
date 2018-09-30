@@ -172,4 +172,26 @@ describe('Tokenizer', () => {
 
     expect(fail).toThrow(/@/);
   });
+
+  it('works with the "=" argument form', () => {
+    const tokenizer = createTokenizer(createStream('--color=[toggle]'));
+
+    expect(tokenizer.consumeNextToken()).toMatchObject({
+      type: 'LongFlag',
+      name: 'color',
+    });
+
+    expect(tokenizer.consumeNextToken()).toMatchObject({
+      type: 'Argument',
+      name: 'toggle',
+    });
+  });
+
+  it('allows long and shorthand flags in the same string', () => {
+    const tokenizer = createTokenizer(createStream('-p, --port <number>'));
+
+    expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'ShortFlag' });
+    expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'LongFlag' });
+    expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'Argument' });
+  });
 });
