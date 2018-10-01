@@ -29,7 +29,7 @@ type CommandOptionsLoose = CommandOptions<{
   usage: string,
 }>;
 
-type Config = {
+export type Config = {
   subCommands?: Subcommands<Config>,
   options?: CommandOptionsLoose,
   command?: Command,
