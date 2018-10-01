@@ -1,4 +1,5 @@
 // @flow
+import * as parseOption from '../parse-option';
 import normalize from '../normalize-config';
 
 describe('normalize-config', () => {
@@ -59,12 +60,12 @@ describe('normalize-config', () => {
 
     expect(result.options.quiet).toEqual({
       ...quiet,
+      parseValue: parseOption.asString,
       usage: {
         argument: null,
         long: null,
         short: 'q',
       },
-      parseValue: expect.any(Function),
     });
   });
 

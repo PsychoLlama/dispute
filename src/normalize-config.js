@@ -2,9 +2,7 @@
 import assert from 'minimalistic-assert';
 
 import parseOptionUsage, { type Usage } from './parser/option-usage-parser';
-
-/* istanbul ignore next */
-const noop = () => {};
+import * as parseOption from './parse-option';
 
 type Options = {};
 type Command = (options: Options) => mixed;
@@ -112,7 +110,7 @@ const normalizeOptions = (
   commandPath: string[]
 ): CommandOptionsStrict => {
   const defaults = {
-    parseValue: noop,
+    parseValue: parseOption.asString,
   };
 
   const optionNames = Object.keys(options);
