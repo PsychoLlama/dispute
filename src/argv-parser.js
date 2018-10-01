@@ -1,11 +1,7 @@
 // @flow
-import chalk from 'chalk';
-
+import normalizeArgv, { looksLikeFlag, isShortFlag } from './normalize-argv';
+import { makeParseErrorFactory } from './parse-error-utils';
 import type { CommandTree } from './normalize-config';
-
-// Same implementation as error. The only advantage is
-// the ability to distinguish it from other errors.
-class ParseError extends Error {}
 
 type Options = $PropertyType<CommandTree, 'options'>;
 
@@ -23,46 +19,6 @@ const indexOptions = (options: Options) => {
   return { shortFlags, longFlags };
 };
 
-const looksLikeFlag = (argument: string) => /^-/.test(argument);
-const isShortFlag = (argument: string) => /^-[^-]/.test(argument);
-const isNumericFlag = (argument: string) => /^-\d/.test(argument);
-const isConjoinedWithValue = (argument: string) => /^--?\w+?=/.test(argument);
-
-// Massages the argv until it's ready for consumption.
-export const normalizeArgv = (argv: string[]): string[] => {
-  const normalized = [];
-
-  argv.forEach(arg => {
-    if (isConjoinedWithValue(arg)) {
-      const [flag, ...argumentParts] = arg.split('=');
-      const argument = argumentParts.join('=');
-
-      // It's possible the flags are part of a short group,
-      // like "-cvp=8080".
-      const normalizedFlags = normalizeArgv([flag]);
-      return normalized.push(...normalizedFlags, argument);
-    }
-
-    // Numeric (-1337) or just a plain argument.
-    if (!looksLikeFlag(arg) || isNumericFlag(arg)) {
-      return normalized.push(arg);
-    }
-
-    // Explode a group of short flags (e.g. -xzvf) into
-    // several independent flags (-x -z -v -f).
-    if (isShortFlag(arg) && arg.length > 2) {
-      const characters = arg.replace(/^-/, '').split('');
-      const independentFlags = characters.map(flag => `-${flag}`);
-
-      return normalized.push(...independentFlags);
-    }
-
-    normalized.push(arg);
-  });
-
-  return normalized;
-};
-
 // Look up the given flag in the flag index.
 // Which index depends on the type.
 const resolveOption = (index, arg) => {
@@ -73,7 +29,7 @@ const resolveOption = (index, arg) => {
 };
 
 const parseOption = ({ flag, option, argument }) => {
-  // If it doesn't accept an argument it must be boolean.
+  // If it doesn't accept an argument, the option must be boolean.
   if (!option.usage.argument) {
     return {
       optionConsumedArgument: false,
@@ -81,15 +37,21 @@ const parseOption = ({ flag, option, argument }) => {
     };
   }
 
-  const optionValue = option.parseValue({
-    flag,
-    input: argument || '',
-    createParseError(msg: string) {
-      const trace = `at ${chalk.blue(flag)}`;
-      const prefix = `${chalk.red('Invalid value')} ${trace}`;
+  // An argument was required but none was given.
+  if (argument === undefined && option.usage.argument.required) {
+    const requiredArgName = option.usage.argument.name;
+    const createParseError = makeParseErrorFactory({
+      prefix: 'Missing value',
+      flag,
+    });
 
-      return new ParseError(`${prefix}: ${msg}`);
-    },
+    throw createParseError(`Expected argument <${requiredArgName}>.`);
+  }
+
+  const optionValue = option.parseValue({
+    createParseError: makeParseErrorFactory({ flag }),
+    input: argument || '',
+    flag,
   });
 
   return { optionValue, optionConsumedArgument: true };
