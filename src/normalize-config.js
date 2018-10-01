@@ -12,19 +12,23 @@ type CommandOption = {
   description?: string,
 };
 
-// TODO: figure out how this should work.
-type ParseValue = (input: { value: string }) => void;
+// I really wish Flow could infer the return value.
+type ParseValue = parseOption.OptionArgument => mixed;
 
 type Subcommands<Subcommand> = {
   [commandName: string]: Subcommand,
 };
 
-type CommandOptions<ParseValue: Object, Usage> = {
-  [optionName: string]: CommandOption & ParseValue & { usage: Usage },
+type CommandOptions<ParseValue: Object> = {
+  [optionName: string]: CommandOption & ParseValue,
 };
 
 // Loose type. Allows undefined fields.
-type CommandOptionsLoose = CommandOptions<{ parseValue?: ParseValue }, string>;
+type CommandOptionsLoose = CommandOptions<{
+  parseValue?: ParseValue,
+  usage: string,
+}>;
+
 type Config = {
   subCommands?: Subcommands<Config>,
   options?: CommandOptionsLoose,
@@ -33,7 +37,12 @@ type Config = {
 };
 
 // Strict type. All fields must have defaults.
-type CommandOptionsStrict = CommandOptions<{ parseValue: ParseValue }, Usage>;
+type CommandOptionsStrict = CommandOptions<{
+  parseValue: ParseValue,
+  optionName: string,
+  usage: Usage,
+}>;
+
 export type CommandTree = {|
   subCommands: Subcommands<CommandTree>,
   options: CommandOptionsStrict,
@@ -126,6 +135,7 @@ const normalizeOptions = (
       ...defaults,
       ...option,
       usage: parseOptionUsage(option.usage),
+      optionName,
     };
 
     return commandOptions;

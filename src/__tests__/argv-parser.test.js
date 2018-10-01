@@ -1,5 +1,6 @@
 // @flow
 import parseArgv, { normalizeArgv } from '../argv-parser';
+import * as parseOption from '../parse-option';
 import normalize from '../normalize-config';
 
 const parse = (config, argv) => parseArgv(normalize(config), argv);
@@ -7,10 +8,15 @@ const parse = (config, argv) => parseArgv(normalize(config), argv);
 describe('option-parser', () => {
   const options = {
     quiet: {
-      usage: '-q, --quiet',
+      usage: '-q, --quiet [bool]',
+      parseValue: parseOption.asBoolean,
     },
-    color: {
-      usage: '--color [boolean]',
+    org: {
+      usage: '--org <org-name>',
+    },
+    increment: {
+      usage: '--inc [value]',
+      parseValue: parseOption.asNumber,
     },
   };
 
@@ -48,7 +54,7 @@ describe('option-parser', () => {
   });
 
   it('parses conjoined short flags', () => {
-    const color = { usage: '-c' };
+    const color = { usage: '-c', parseValue: parseOption.asBoolean };
     const root = { command() {}, options: { ...options, color } };
     const result = parse(root, ['-qc']);
 
@@ -56,6 +62,20 @@ describe('option-parser', () => {
       quiet: true,
       color: true,
     });
+  });
+
+  it('consults the custom option parser for the argument', () => {
+    const root = { command() {}, options };
+    const result = parse(root, ['--inc=10']);
+
+    expect(result.options.increment).toBe(10);
+  });
+
+  it('prefixes parse errors with the flag', () => {
+    const root = { command() {}, options };
+    const fail = () => parse(root, ['--inc=wat']);
+
+    expect(fail).toThrow(/--inc/);
   });
 
   describe('normalizeArgv(...)', () => {

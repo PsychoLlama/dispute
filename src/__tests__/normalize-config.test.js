@@ -61,12 +61,24 @@ describe('normalize-config', () => {
     expect(result.options.quiet).toEqual({
       ...quiet,
       parseValue: parseOption.asString,
+      optionName: 'quiet',
       usage: {
         argument: null,
         long: null,
         short: 'q',
       },
     });
+  });
+
+  // Just convenience.
+  it('adds the option name to each option', () => {
+    const quiet = { usage: '-q' };
+    const config = normalize({
+      command() {},
+      options: { quiet },
+    });
+
+    expect(config.options.quiet).toMatchObject({ optionName: 'quiet' });
   });
 
   it('throws if configured without a command', () => {

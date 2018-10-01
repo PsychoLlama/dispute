@@ -1,5 +1,11 @@
 // @flow
+import chalk from 'chalk';
+
 import type { CommandTree } from './normalize-config';
+
+// Same implementation as error. The only advantage is
+// the ability to distinguish it from other errors.
+class ParseError extends Error {}
 
 type Options = $PropertyType<CommandTree, 'options'>;
 
@@ -8,10 +14,10 @@ const indexOptions = (options: Options) => {
   const longFlags = new Map();
 
   for (const optionName of Object.keys(options)) {
-    const { usage } = options[optionName];
-    const option = { ...usage, optionName };
-    shortFlags.set(usage.short, option);
-    longFlags.set(usage.long, option);
+    const flag = options[optionName];
+
+    shortFlags.set(flag.usage.short, flag);
+    longFlags.set(flag.usage.long, flag);
   }
 
   return { shortFlags, longFlags };
@@ -66,8 +72,24 @@ const resolveOption = (index, arg) => {
   return flagIndex.get(flagName);
 };
 
-const parseOption = () => {
-  return true;
+const parseOption = ({ flag, option, argument }) => {
+  return option.parseValue({
+    flag,
+    input: argument || '',
+    createParseError: (msg: string) => {
+      const trace = `at ${chalk.blue(flag)}`;
+      const prefix = `${chalk.red('Invalid value')} ${trace}`;
+
+      return new ParseError(`${prefix}: ${msg}`);
+    },
+  });
+};
+
+const extractPossibleArgument = (argv: string[], index: number): ?string => {
+  const argument: ?string = argv[index];
+  if (!argument || looksLikeFlag(argument)) return undefined;
+
+  return argument;
 };
 
 type ParsedOutput = {
@@ -90,15 +112,19 @@ export default function parseArgv(
   command: CommandTree,
   argv: string[]
 ): ParsedOutput {
-  const index = indexOptions(command.options);
+  const flagIndex = indexOptions(command.options);
 
   const { options, invalidOptions } = normalizeArgv(argv).reduce(
-    ({ options, invalidOptions }, arg) => {
-      const option = resolveOption(index, arg);
+    ({ options, invalidOptions }, arg, index, argv) => {
+      const option = resolveOption(flagIndex, arg);
 
       if (option) {
-        // TODO: actually parse the option.
-        options[option.optionName] = parseOption();
+        const argument = extractPossibleArgument(argv, index + 1);
+        options[option.optionName] = parseOption({
+          flag: arg,
+          argument,
+          option,
+        });
       } else {
         invalidOptions.push(arg);
       }
