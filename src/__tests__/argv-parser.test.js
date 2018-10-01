@@ -1,8 +1,8 @@
 // @flow
-import parseOptions, { normalizeArgv } from '../option-parser';
+import parseArgv, { normalizeArgv } from '../argv-parser';
 import normalize from '../normalize-config';
 
-const parse = (config, argv) => parseOptions(normalize(config), argv);
+const parse = (config, argv) => parseArgv(normalize(config), argv);
 
 describe('option-parser', () => {
   const options = {

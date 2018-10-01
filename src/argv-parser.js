@@ -86,7 +86,7 @@ type ParsedOutput = {
  * $ cmd -p 8080 cmd-arg --color=yes
  * $ cmd variadic -qsp 3000 args -v flag:param
  */
-export default function parse(
+export default function parseArgv(
   command: CommandTree,
   argv: string[]
 ): ParsedOutput {
