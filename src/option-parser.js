@@ -1,28 +1,78 @@
 // @flow
 import type { CommandTree } from './normalize-config';
 
-export const ArgTypes = {
-  Optional: 'optional',
-  Required: 'required',
-  None: 'none',
-};
+type Options = $PropertyType<CommandTree, 'options'>;
 
-const indexOptions = options => {
-  const shortNames = new Map();
-  const fullNames = new Map();
+const indexOptions = (options: Options) => {
+  const shortFlags = new Map();
+  const longFlags = new Map();
 
   for (const optionName of Object.keys(options)) {
     const { usage } = options[optionName];
     const option = { ...usage, optionName };
-    shortNames.set(usage.short, option);
-    fullNames.set(usage.long, option);
+    shortFlags.set(usage.short, option);
+    longFlags.set(usage.long, option);
   }
 
-  return { shortNames, fullNames };
+  return { shortFlags, longFlags };
+};
+
+const looksLikeFlag = (argument: string) => /^-/.test(argument);
+const isShortFlag = (argument: string) => /^-[^-]/.test(argument);
+const isNumericFlag = (argument: string) => /^-\d/.test(argument);
+const isConjoinedWithValue = (argument: string) => /^--?\w+?=/.test(argument);
+
+// Massages the argv until it's ready for consumption.
+export const normalizeArgv = (argv: string[]): string[] => {
+  const normalized = [];
+
+  argv.forEach(arg => {
+    if (isConjoinedWithValue(arg)) {
+      const [flag, ...argumentParts] = arg.split('=');
+      const argument = argumentParts.join('=');
+
+      // It's possible the flags are part of a short group,
+      // like "-cvp=8080".
+      const normalizedFlags = normalizeArgv([flag]);
+      return normalized.push(...normalizedFlags, argument);
+    }
+
+    // Numeric (-1337) or just a plain argument.
+    if (!looksLikeFlag(arg) || isNumericFlag(arg)) {
+      return normalized.push(arg);
+    }
+
+    // Explode a group of short flags (e.g. -xzvf) into
+    // several independent flags (-x -z -v -f).
+    if (isShortFlag(arg) && arg.length > 2) {
+      const characters = arg.replace(/^-/, '').split('');
+      const independentFlags = characters.map(flag => `-${flag}`);
+
+      return normalized.push(...independentFlags);
+    }
+
+    normalized.push(arg);
+  });
+
+  return normalized;
+};
+
+// Look up the given flag in the flag index.
+// Which index depends on the type.
+const resolveOption = (index, arg) => {
+  const flagName = arg.replace(/^--?/, '');
+  const flagIndex = isShortFlag(arg) ? index.shortFlags : index.longFlags;
+
+  return flagIndex.get(flagName);
+};
+
+const parseOption = () => {
+  return true;
 };
 
 type ParsedOutput = {
   options: { [optionName: string]: mixed },
+  invalidOptions: string[],
   args: string[],
 };
 
@@ -40,21 +90,30 @@ export default function parse(
   command: CommandTree,
   argv: string[]
 ): ParsedOutput {
-  const { shortNames } = indexOptions(command.options);
+  const index = indexOptions(command.options);
 
-  const options = argv.reduce((options, arg) => {
-    const flag = arg.replace(/-/g, '');
-    const option = shortNames.get(flag);
+  const { options, invalidOptions } = normalizeArgv(argv).reduce(
+    ({ options, invalidOptions }, arg) => {
+      const option = resolveOption(index, arg);
 
-    if (option) {
-      options[option.optionName] = true;
+      if (option) {
+        // TODO: actually parse the option.
+        options[option.optionName] = parseOption();
+      } else {
+        invalidOptions.push(arg);
+      }
+
+      return { options, invalidOptions };
+    },
+    {
+      options: {},
+      invalidOptions: [],
     }
-
-    return options;
-  }, {});
+  );
 
   return {
-    options,
+    invalidOptions,
     args: [],
+    options,
   };
 }

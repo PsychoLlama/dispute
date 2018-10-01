@@ -1,5 +1,5 @@
 // @flow
-import parseUsage from '../usage-parser';
+import parseUsage from '../option-usage-parser';
 
 describe('Usage parser', () => {
   it('parses out the shorthand flag', () => {

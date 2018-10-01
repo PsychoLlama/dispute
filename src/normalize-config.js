@@ -1,7 +1,7 @@
 // @flow
 import assert from 'minimalistic-assert';
 
-import parseUsage, { type Usage } from './parser/usage-parser';
+import parseOptionUsage, { type Usage } from './parser/option-usage-parser';
 
 /* istanbul ignore next */
 const noop = () => {};
@@ -127,7 +127,7 @@ const normalizeOptions = (
     commandOptions[optionName] = {
       ...defaults,
       ...option,
-      usage: parseUsage(option.usage),
+      usage: parseOptionUsage(option.usage),
     };
 
     return commandOptions;
