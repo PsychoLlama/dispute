@@ -8,8 +8,7 @@ const parse = (config, argv) => parseArgv(normalize(config), argv);
 describe('option-parser', () => {
   const options = {
     quiet: {
-      usage: '-q, --quiet [bool]',
-      parseValue: parseOption.asBoolean,
+      usage: '-q, --quiet',
     },
     org: {
       usage: '--org <org-name>',
@@ -76,6 +75,20 @@ describe('option-parser', () => {
     const fail = () => parse(root, ['--inc=wat']);
 
     expect(fail).toThrow(/--inc/);
+  });
+
+  it('uses "true" for options without arguments', () => {
+    const root = { command() {}, options };
+    const result = parse(root, ['--quiet']);
+
+    expect(result.options.quiet).toBe(true);
+  });
+
+  it('removes consumed arguments from the arguments list', () => {
+    const root = { command() {}, options };
+    const result = parse(root, ['--inc', '50', 'arg']);
+
+    expect(result.args).toEqual(['arg']);
   });
 
   describe('normalizeArgv(...)', () => {

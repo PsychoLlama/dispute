@@ -73,20 +73,30 @@ const resolveOption = (index, arg) => {
 };
 
 const parseOption = ({ flag, option, argument }) => {
-  return option.parseValue({
+  // If it doesn't accept an argument it must be boolean.
+  if (!option.usage.argument) {
+    return {
+      optionConsumedArgument: false,
+      optionValue: true,
+    };
+  }
+
+  const optionValue = option.parseValue({
     flag,
     input: argument || '',
-    createParseError: (msg: string) => {
+    createParseError(msg: string) {
       const trace = `at ${chalk.blue(flag)}`;
       const prefix = `${chalk.red('Invalid value')} ${trace}`;
 
       return new ParseError(`${prefix}: ${msg}`);
     },
   });
+
+  return { optionValue, optionConsumedArgument: true };
 };
 
-const extractPossibleArgument = (argv: string[], index: number): ?string => {
-  const argument: ?string = argv[index];
+const extractPossibleArgument = (argvStack: string[]): ?string => {
+  const argument: ?string = argvStack[0];
   if (!argument || looksLikeFlag(argument)) return undefined;
 
   return argument;
@@ -113,33 +123,47 @@ export default function parseArgv(
   argv: string[]
 ): ParsedOutput {
   const flagIndex = indexOptions(command.options);
+  const stack = normalizeArgv(argv);
+  const invalidOptions = [];
+  const options = {};
+  const args = [];
 
-  const { options, invalidOptions } = normalizeArgv(argv).reduce(
-    ({ options, invalidOptions }, arg, index, argv) => {
-      const option = resolveOption(flagIndex, arg);
+  // The argv stack is consumed left to right.
+  while (stack.length) {
+    const arg = stack.shift();
 
-      if (option) {
-        const argument = extractPossibleArgument(argv, index + 1);
-        options[option.optionName] = parseOption({
-          flag: arg,
-          argument,
-          option,
-        });
-      } else {
-        invalidOptions.push(arg);
-      }
-
-      return { options, invalidOptions };
-    },
-    {
-      options: {},
-      invalidOptions: [],
+    // Must be a command argument.
+    if (!looksLikeFlag(arg)) {
+      args.push(arg);
+      continue;
     }
-  );
+
+    // Look up the option by the flag name.
+    const option = resolveOption(flagIndex, arg);
+
+    // We were just given an invalid flag. Collect any others
+    // for a more complete debugging picture.
+    if (!option) {
+      invalidOptions.push(arg);
+      continue;
+    }
+
+    // Parse the option (and maybe argument) into a value.
+    const { optionValue, optionConsumedArgument } = parseOption({
+      argument: extractPossibleArgument(stack),
+      flag: arg,
+      option,
+    });
+
+    options[option.optionName] = optionValue;
+
+    // Don't mistake the option's argument for a command argument.
+    if (optionConsumedArgument) stack.shift();
+  }
 
   return {
     invalidOptions,
-    args: [],
     options,
+    args,
   };
 }
