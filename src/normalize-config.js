@@ -43,21 +43,28 @@ type CommandOptionsStrict = CommandOptions<{
   usage: Usage,
 }>;
 
-export type CommandTree = {|
+export type CommandTree = {
   subCommands: Subcommands<CommandTree>,
   options: CommandOptionsStrict,
+  parent: CommandTree | null,
+  name: string | null,
   args: string | null,
   command?: Command,
-|};
+};
 
 /**
  * Validate the config object and provide defaults recursively.
  */
 export default function normalizeConfig(
   config: Config,
-  commandPath: string[] = []
+  metadata: {
+    parent?: CommandTree | null,
+    commandPath?: string[],
+    name?: string | null,
+  } = {}
 ): CommandTree {
   const { command, subCommands = {}, options = {}, args = null } = config;
+  const { parent = null, commandPath = [], name = null } = metadata;
 
   // A tiny bit of validation.
   if (!command) {
@@ -74,12 +81,26 @@ export default function normalizeConfig(
     );
   }
 
-  return {
-    subCommands: normalizeSubcommands(subCommands, commandPath),
-    options: normalizeOptions(options, commandPath),
+  const normalizedCommand = {};
+  Object.assign(normalizedCommand, {
     command,
+    parent,
     args,
-  };
+    name,
+  });
+
+  normalizedCommand.subCommands = normalizeSubcommands({
+    parent: normalizedCommand,
+    commands: subCommands,
+    commandPath,
+  });
+
+  normalizedCommand.options = normalizeOptions({
+    commandPath,
+    options,
+  });
+
+  return normalizedCommand;
 }
 
 // Return a string like 'config.subCommands.init.options'.
@@ -98,26 +119,38 @@ const generateFieldTrace = (commandPath: string[], field: string) => {
 };
 
 // Recursively apply normalizeConfig(...) to each subcommand.
-const normalizeSubcommands = (
+const normalizeSubcommands = ({
+  commandPath,
+  commands,
+  parent,
+}: {
   commands: Subcommands<Config>,
-  commandPath: string[]
-): Subcommands<CommandTree> => {
+  commandPath: string[],
+  parent: CommandTree,
+}): Subcommands<CommandTree> => {
   const commandNames = Object.keys(commands);
 
   return commandNames.reduce((subCommands, commandName) => {
     const command = commands[commandName];
     const path = commandPath.concat(commandName);
-    subCommands[commandName] = normalizeConfig(command, path);
+    subCommands[commandName] = normalizeConfig(command, {
+      commandPath: path,
+      name: commandName,
+      parent,
+    });
 
     return subCommands;
   }, {});
 };
 
 // Add defaults to every option.
-const normalizeOptions = (
+const normalizeOptions = ({
+  options,
+  commandPath,
+}: {
   options: CommandOptionsLoose,
-  commandPath: string[]
-): CommandOptionsStrict => {
+  commandPath: string[],
+}): CommandOptionsStrict => {
   const defaults = {
     parseValue: parseOption.asString,
   };

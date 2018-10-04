@@ -132,4 +132,28 @@ describe('normalize-config', () => {
       short: 'v',
     });
   });
+
+  it('adds a link to the parent command', () => {
+    const add = { command() {} };
+    const remote = { subCommands: { add } };
+    const config = { subCommands: { remote } };
+    const result = normalize(config);
+
+    expect(result.parent).toBe(null);
+    expect(result.subCommands.remote.parent).toBe(result);
+    expect(result.subCommands.remote.subCommands.add.parent).toBe(
+      result.subCommands.remote
+    );
+  });
+
+  it('adds the command name', () => {
+    const add = { command() {} };
+    const remote = { subCommands: { add } };
+    const config = { subCommands: { remote } };
+    const result = normalize(config);
+
+    expect(result.name).toBe(null);
+    expect(result.subCommands.remote.name).toBe('remote');
+    expect(result.subCommands.remote.subCommands.add.name).toBe('add');
+  });
 });
