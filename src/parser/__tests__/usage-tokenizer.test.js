@@ -2,6 +2,19 @@
 import createTokenizer from '../usage-tokenizer';
 import createStream from '../input-stream';
 
+const tokenize = (input: string) => {
+  const stream = createStream(input);
+  const tokenizer = createTokenizer(stream);
+  const tokens = [];
+
+  while (!tokenizer.eof()) {
+    const token = tokenizer.consumeNextToken();
+    tokens.push(token);
+  }
+
+  return tokens;
+};
+
 describe('Tokenizer', () => {
   it('returns a tokenizer interface', () => {
     const tokenizer = createTokenizer(createStream('content'));
@@ -53,40 +66,36 @@ describe('Tokenizer', () => {
   });
 
   it('parses short options', () => {
-    const tokenizer = createTokenizer(createStream('-q'));
-    const token = tokenizer.peek();
+    const [flag] = tokenize('-q');
 
-    expect(token).toMatchObject({
+    expect(flag).toMatchObject({
       type: 'ShortFlag',
       name: 'q',
     });
   });
 
   it('calculates the right short flag line & column', () => {
-    const tokenizer = createTokenizer(createStream('-s'));
-    const token = (tokenizer.peek(): any);
+    const [token] = tokenize('-s');
 
     expect(token.loc).toMatchObject({ line: 0, column: 0 });
   });
 
   it('throws if the flag name is omitted', () => {
-    const tokenizer = createTokenizer(createStream('- '));
-    const fail = () => tokenizer.peek();
+    const fail = () => tokenize('- ');
 
     expect(fail).toThrow(/flag/i);
   });
 
   it('survives leading whitespace', () => {
-    const tokenizer = createTokenizer(createStream('  -q'));
-    const token = tokenizer.peek();
+    const [token] = tokenize('  -q');
 
     expect(token).toMatchObject({ name: 'q' });
   });
 
   it('allows long flags containing hyphens', () => {
-    const tokenizer = createTokenizer(createStream('--no-color'));
+    const [token] = tokenize('--no-color');
 
-    expect(tokenizer.peek()).toMatchObject({
+    expect(token).toMatchObject({
       raw: '--no-color',
       name: 'no-color',
     });
@@ -105,23 +114,21 @@ describe('Tokenizer', () => {
   });
 
   it('allows numbers as variable length short flags', () => {
-    const tokenizer = createTokenizer(createStream('-1337'));
-    const token = tokenizer.peek();
+    const [token] = tokenize('-1337');
 
     expect(token).toMatchObject({ name: '1337' });
   });
 
   it('dies if more than one short name is provided', () => {
-    const tokenizer = createTokenizer(createStream('-qs'));
-    const fail = () => tokenizer.peek();
+    const fail = () => tokenize('-qs');
 
     expect(fail).toThrow(/flag/i);
   });
 
   it('parses long flag names', () => {
-    const tokenizer = createTokenizer(createStream('--quiet'));
+    const [token] = tokenize('--quiet');
 
-    expect(tokenizer.peek()).toMatchObject({
+    expect(token).toMatchObject({
       type: 'LongFlag',
       raw: '--quiet',
       name: 'quiet',
@@ -129,10 +136,9 @@ describe('Tokenizer', () => {
   });
 
   it('parses out option arguments', () => {
-    const tokenizer = createTokenizer(createStream('--port <port-number>'));
-    tokenizer.consumeNextToken();
+    const [, arg] = tokenize('--port <port-number>');
 
-    expect(tokenizer.peek()).toMatchObject({
+    expect(arg).toMatchObject({
       name: 'port-number',
       type: 'Argument',
     });
@@ -149,10 +155,9 @@ describe('Tokenizer', () => {
   });
 
   it('includes the argument line & column', () => {
-    const tokenizer = createTokenizer(createStream('--color [label]'));
-    tokenizer.consumeNextToken();
+    const [, arg] = tokenize('--color [label]');
 
-    expect(tokenizer.peek()).toMatchObject({
+    expect(arg).toMatchObject({
       loc: {
         column: 8,
         line: 0,
@@ -169,11 +174,11 @@ describe('Tokenizer', () => {
   });
 
   it('works with wonky whitespace', () => {
-    const input = '   --from    [files]    ';
-    const tokenizer = createTokenizer(createStream(input));
-    expect(tokenizer.consumeNextToken().type).toBe('LongFlag');
-    expect(tokenizer.consumeNextToken().type).toBe('Argument');
-    expect(tokenizer.eof()).toBe(true);
+    const tokens = tokenize('   --from    [files]    ');
+
+    expect(tokens).toHaveLength(2);
+    expect(tokens[0].type).toBe('LongFlag');
+    expect(tokens[1].type).toBe('Argument');
   });
 
   // Includes `.peek(...)`.
@@ -187,12 +192,9 @@ describe('Tokenizer', () => {
   });
 
   it('contains the raw argument string', () => {
-    const tokenizer = createTokenizer(createStream('-p <port>'));
-    tokenizer.consumeNextToken();
+    const [, arg] = tokenize('-p <port>');
 
-    expect(tokenizer.peek()).toMatchObject({
-      raw: '<port>',
-    });
+    expect(arg).toMatchObject({ raw: '<port>' });
   });
 
   it('dies on unrecognized syntax', () => {
@@ -203,27 +205,19 @@ describe('Tokenizer', () => {
   });
 
   it('emits a punctuation token for the equals sign', () => {
-    const tokenizer = createTokenizer(createStream('-p=<number>'));
+    const [flag, punc, arg] = tokenize('--port=<number>');
 
-    expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'ShortFlag' });
-    expect(tokenizer.consumeNextToken()).toMatchObject({
-      type: 'Punctuation',
-      value: '=',
-    });
-
-    expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'Argument' });
+    expect(flag).toMatchObject({ type: 'LongFlag' });
+    expect(punc).toMatchObject({ type: 'Punctuation', value: '=' });
+    expect(arg).toMatchObject({ type: 'Argument' });
   });
 
   it('emits commas as punctuation tokens', () => {
-    const tokenizer = createTokenizer(createStream('-p, --port <number>'));
+    const [short, punc, long, arg] = tokenize('-p, --port <number>');
 
-    expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'ShortFlag' });
-    expect(tokenizer.consumeNextToken()).toMatchObject({
-      type: 'Punctuation',
-      value: ',',
-    });
-
-    expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'LongFlag' });
-    expect(tokenizer.consumeNextToken()).toMatchObject({ type: 'Argument' });
+    expect(short).toMatchObject({ type: 'ShortFlag' });
+    expect(punc).toMatchObject({ type: 'Punctuation', value: ',' });
+    expect(long).toMatchObject({ type: 'LongFlag' });
+    expect(arg).toMatchObject({ type: 'Argument' });
   });
 });
