@@ -141,6 +141,7 @@ describe('Tokenizer', () => {
     expect(arg).toMatchObject({
       name: 'port-number',
       type: 'Argument',
+      variadic: false,
     });
   });
 
@@ -219,5 +220,30 @@ describe('Tokenizer', () => {
     expect(punc).toMatchObject({ type: 'Punctuation', value: ',' });
     expect(long).toMatchObject({ type: 'LongFlag' });
     expect(arg).toMatchObject({ type: 'Argument' });
+  });
+
+  it('recognizes variadic optional arguments', () => {
+    const [arg] = tokenize('[arg...]');
+
+    expect(arg).toMatchObject({
+      type: 'Argument',
+      variadic: true,
+    });
+  });
+
+  it('recognizes variadic required arguments', () => {
+    const [arg] = tokenize('<arg...>');
+
+    expect(arg).toMatchObject({
+      type: 'Argument',
+      required: true,
+      variadic: true,
+    });
+  });
+
+  it('dies if variadic syntax is invalid', () => {
+    const fail = () => tokenize('<arg.>');
+
+    expect(fail).toThrow(/\./);
   });
 });

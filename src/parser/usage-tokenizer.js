@@ -18,6 +18,7 @@ export type LongFlag = {
 export type Argument = {
   type: 'Argument',
   required: boolean,
+  variadic: boolean,
   name: string,
   raw: string,
   loc: Loc,
@@ -156,10 +157,17 @@ export default function createTokenizer(inputStream: InputStream) {
     };
   };
 
-  // Option argument, e.g.:
-  // - --flag <required-arg>
-  // - --flag [optional]
-  // - --flag=[value]
+  const readVariadicPunctuation = () => {
+    expect('.');
+    expect('.');
+    expect('.');
+  };
+
+  // Examples:
+  // - <required-arg>
+  // - <variadic...>
+  // - [optional]
+  // - [value...]
   const isArgument = () => isChar('<') || isChar('[');
   const readArgument = (): Argument => {
     const loc = inputStream.getLoc();
@@ -169,12 +177,15 @@ export default function createTokenizer(inputStream: InputStream) {
     raw += expect(required ? '<' : '[');
 
     const argName = readWhile(char => /[\w-]/.test(char));
+    const variadic = isChar('.');
+    if (variadic) readVariadicPunctuation();
     raw += argName + expect(required ? '>' : ']');
 
     return {
       type: 'Argument',
       name: argName,
       required,
+      variadic,
       raw,
       loc,
     };
