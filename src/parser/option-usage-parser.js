@@ -19,6 +19,8 @@ export type Usage = {
 
 export default function parseUsage(usageString: string): Usage {
   const tokenizer = createTokenizer(createStream(usageString));
+  const { isType } = tokenizer;
+
   const usage: Usage = {
     argument: null,
     short: null,
@@ -66,12 +68,6 @@ export default function parseUsage(usageString: string): Usage {
       token,
       `Each option is only allowed one ${typeName}.`
     );
-  };
-
-  // More convenient form of `.peek(...)`.
-  const isType = (type: string) => {
-    const token = tokenizer.peek();
-    return token.type === type;
   };
 
   // -q

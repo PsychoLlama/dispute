@@ -37,6 +37,7 @@ type ErrorReport = { loc: Loc, raw: string };
 
 export interface Tokenizer {
   reportToken(ErrorReport, message: string): SyntaxError;
+  isType(type: string): boolean;
   consumeNextToken(): Token;
   eof(): boolean;
   peek(): Token;
@@ -237,6 +238,11 @@ export default function createTokenizer(inputStream: InputStream) {
     peek() {
       peekedToken = peekedToken || this.consumeNextToken();
       return peekedToken;
+    },
+
+    isType: type => {
+      const token = controls.peek();
+      return token.type === type;
     },
   };
 

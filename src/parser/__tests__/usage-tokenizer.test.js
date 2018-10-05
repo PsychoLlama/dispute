@@ -248,4 +248,24 @@ describe('Tokenizer', () => {
 
     expect(fail).toThrow(/\./);
   });
+
+  describe('isType', () => {
+    it('returns false if it does not match', () => {
+      const tokenizer = createTokenizer(createStream('[arg]'));
+
+      expect(tokenizer.isType('Punctuation')).toBe(false);
+    });
+
+    it('returns true if the token matches', () => {
+      const tokenizer = createTokenizer(createStream('[arg]'));
+
+      expect(tokenizer.isType('Argument')).toBe(true);
+    });
+
+    it('works without the `this` context', () => {
+      const { isType } = createTokenizer(createStream('[arg]'));
+
+      expect(isType('Argument')).toBe(true);
+    });
+  });
 });
