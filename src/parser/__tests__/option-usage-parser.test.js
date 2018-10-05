@@ -82,4 +82,10 @@ describe('Usage parser', () => {
 
     expect(fail).toThrow(/argument/i);
   });
+
+  it('dies if the flag has variadic arguments', () => {
+    const fail = () => parseUsage('--port <numbers...>');
+
+    expect(fail).toThrow(/(variadic|argument)/i);
+  });
 });

@@ -227,7 +227,9 @@ describe('Tokenizer', () => {
 
     expect(arg).toMatchObject({
       type: 'Argument',
+      required: false,
       variadic: true,
+      raw: '[arg...]',
     });
   });
 

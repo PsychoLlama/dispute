@@ -113,6 +113,13 @@ export default function parseUsage(usageString: string): Usage {
   const isArgument = () => isType('Argument');
   const readArgument = () => {
     const arg: Argument = (tokenizer.consumeNextToken(): any);
+    if (arg.variadic) {
+      throw tokenizer.reportToken(
+        arg,
+        `Options can't have more than one argument.`
+      );
+    }
+
     assertUnique(arg, !!usage.argument, 'argument');
     usage.argument = {
       required: arg.required,

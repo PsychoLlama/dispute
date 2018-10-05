@@ -158,9 +158,7 @@ export default function createTokenizer(inputStream: InputStream) {
   };
 
   const readVariadicPunctuation = () => {
-    expect('.');
-    expect('.');
-    expect('.');
+    return expect('.') + expect('.') + expect('.');
   };
 
   // Examples:
@@ -177,9 +175,12 @@ export default function createTokenizer(inputStream: InputStream) {
     raw += expect(required ? '<' : '[');
 
     const argName = readWhile(char => /[\w-]/.test(char));
+    raw += argName;
+
     const variadic = isChar('.');
-    if (variadic) readVariadicPunctuation();
-    raw += argName + expect(required ? '>' : ']');
+    if (variadic) raw += readVariadicPunctuation();
+
+    raw += expect(required ? '>' : ']');
 
     return {
       type: 'Argument',
