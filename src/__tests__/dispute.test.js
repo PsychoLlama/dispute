@@ -1,6 +1,6 @@
 // @flow
 import { handleKnownErrors } from '../parse-error-utils';
-import { createCli } from '../index';
+import { createCli } from '../dispute';
 
 jest.mock('../parse-error-utils');
 
