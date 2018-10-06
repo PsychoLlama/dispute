@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-yarn -s babel src/ -d dist/ --ignore __tests__
+yarn -s babel src/ -d dist/ --ignore __tests__ "$@"
 
 # Publish flow types. Sometimes Flow's tooling just makes me sad.
 find src -name '*.js' -not -path '*/__tests__/*' | while read -r src_file; do
