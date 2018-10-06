@@ -64,4 +64,38 @@ describe('Dispute', () => {
       expect(promise).rejects.toBe(err);
     });
   });
+
+  describe('createTestInterface', () => {
+    const createTestInterface = commands => {
+      const cli = createCli({ commandName, packageJson, cli: commands });
+      return cli.createTestInterface();
+    };
+
+    it('returns a function', () => {
+      const test = createTestInterface();
+
+      expect(test).toEqual(expect.any(Function));
+    });
+
+    it('resolves with command output', async () => {
+      const output = 'Async output';
+      const test = createTestInterface({
+        command: () => Promise.resolve(output),
+      });
+
+      await expect(test()).resolves.toBe(output);
+    });
+
+    it('resolves the correct command providing options', async () => {
+      const options = { verbose: { usage: '-v, --verbose' } };
+      const remote = { command: jest.fn(), options };
+      const test = createTestInterface({
+        subCommands: { remote },
+      });
+
+      await test('remote', '-v');
+
+      expect(remote.command).toHaveBeenCalledWith({ verbose: true });
+    });
+  });
 });
