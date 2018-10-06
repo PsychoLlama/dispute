@@ -13,14 +13,13 @@ Dispute is an alternative to [commander](https://www.npmjs.com/package/commander
 - Offers better alternatives to `process.exit(1)`
   - Rejecting with an exit code tells `dispute` to kill the process, but only outside unit tests
 - Encourages a structure where commands can easily be reused in other commands
-- Automatically generate an SDK from your command line app
 - The options object comes _before_ variadic arguments
 
 ## Example
 Shows how `git remote` might be constructed.
 
 ```js
-import { createCli, parseOption } from 'dispute'
+import { createCli, parseValue } from 'dispute'
 
 // $ git remote add ...
 const addRemote = {
@@ -40,7 +39,7 @@ const remote = {
   options: {
     verbose: {
       usage: '-v, --verbose=[bool]',
-      parseValue: parseOption.asBoolean,
+      parseValue: parseValue.asBoolean,
     },
   },
 
@@ -53,7 +52,12 @@ const remote = {
 const cli = createCli({
   subCommands: { remote },
 })
+
+// Run!
+cli.execute()
 ```
 
-## Broken promises
-Almost everything you've read here is a lie. I'm still working on the first version, so many of the features listed haven't even been built.
+## Roadmap
+- [ ] Generate help output from command metadata (high priority)
+- [ ] Add better documentation
+- [ ] Automatically generate an SDK from your command line app
