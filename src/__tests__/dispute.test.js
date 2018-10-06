@@ -1,8 +1,8 @@
 // @flow
-import { handleKnownErrors } from '../parse-error-utils';
+import { handleKnownErrors } from '../error-utils';
 import { createCli } from '../dispute';
 
-jest.mock('../parse-error-utils');
+jest.mock('../error-utils');
 
 describe('Dispute', () => {
   const commandName = 'unit-test';

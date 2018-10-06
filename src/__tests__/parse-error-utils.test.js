@@ -4,7 +4,7 @@ import {
   ParseError,
   isKnownError,
   handleKnownErrors,
-} from '../parse-error-utils';
+} from '../error-utils';
 
 describe('FatalError', () => {
   const message = 'Testing FatalError(...)';

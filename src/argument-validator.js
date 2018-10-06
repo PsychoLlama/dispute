@@ -2,7 +2,7 @@
 import chalk from 'chalk';
 
 import type { CommandTree } from './normalize-commands';
-import { FatalError } from './parse-error-utils';
+import { FatalError } from './error-utils';
 
 export default function validateArguments(
   commandTree: CommandTree,
