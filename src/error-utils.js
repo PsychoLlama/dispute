@@ -65,12 +65,12 @@ type ErrorHandlerOptions = {
 export const handleKnownErrors = (
   options: ErrorHandlerOptions,
   fn: (...args: *) => *
-) => (...args: *) => {
+) => async (...args: *) => {
   /* istanbul ignore next */
   const { checkTestEnvBeforeExiting = true, log = DEFAULT_ERROR_LOG } = options;
 
   try {
-    return fn(...args);
+    return await fn(...args);
   } catch (error) {
     const shouldThrowNormally = checkTestEnvBeforeExiting ? isTestEnv() : false;
 

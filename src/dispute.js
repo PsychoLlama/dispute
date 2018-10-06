@@ -8,19 +8,20 @@ export const createCli = (sparseConfig: Config) => {
   const config = normalizeConfig(sparseConfig);
 
   return {
-    runWithArgs: handleKnownErrors({}, (argv: string[]) => {
+    runWithArgs: handleKnownErrors({}, async (argv: string[]) => {
       const result = parseArgv(config.cli, argv);
       const { command, args, options } = result;
 
       if (!command.command) {
-        // TODO: include more debugging information.
+        // TODO: generate and print the help page.
         throw new FatalError('Invalid command');
       }
 
-      const output = command.command(options, ...args);
+      const output = await command.command(options, ...args);
+
       return {
         ...result,
-        output: Promise.resolve(output),
+        output,
       };
     }),
   };

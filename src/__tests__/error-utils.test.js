@@ -69,55 +69,54 @@ describe('handleKnownErrors(...)', () => {
     jest.clearAllMocks();
   });
 
-  it('forwards input and output if no errors occur', () => {
+  it('forwards input and output if no errors occur', async () => {
     const input = ['1', '2', '3'];
     const handler = jest.fn().mockReturnValue('return value');
     const wrapped = handleKnownErrors(options, handler);
-    const result = wrapped(...input);
+    const result = await wrapped(...input);
 
     expect(handler).toHaveBeenCalledWith(...input);
     expect(result).toBe('return value');
   });
 
-  it('exits with the given error code', () => {
+  it('exits with the given error code', async () => {
     const wrapped = handleKnownErrors(options, () => {
       throw new FatalError(message, 10);
     });
 
-    expect(wrapped).not.toThrow();
-    expect(wrapped()).toMatchObject({ exitCode: 10 });
+    await expect(wrapped()).resolves.toMatchObject({ exitCode: 10 });
     expect(process.exit).toHaveBeenCalledWith(10);
   });
 
-  it('exits non-zero for parse errors', () => {
+  it('exits non-zero for parse errors', async () => {
     const wrapped = handleKnownErrors(options, () => {
       throw new ParseError(message);
     });
 
-    wrapped();
+    await wrapped();
 
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
-  it('prints the error to the console', () => {
+  it('prints the error to the console', async () => {
     const wrapped = handleKnownErrors(options, () => {
       throw new ParseError(message);
     });
 
-    wrapped();
+    await wrapped();
 
     expect(options.log).toHaveBeenCalledWith(message);
   });
 
-  it('lets unknown errors fall through', () => {
+  it('lets unknown errors fall through', async () => {
     const wrapped = handleKnownErrors(options, () => {
       throw new Error(message);
     });
 
-    expect(wrapped).toThrow(message);
+    await expect(wrapped()).rejects.toMatchObject({ message });
   });
 
-  it('does not exit in a test environment', () => {
+  it('does not exit in a test environment', async () => {
     const enableTestEnvCheck = {
       ...options,
       checkTestEnvBeforeExiting: true,
@@ -127,7 +126,7 @@ describe('handleKnownErrors(...)', () => {
       throw new FatalError(message);
     });
 
-    expect(wrapped).toThrow(message);
+    await expect(wrapped()).rejects.toMatchObject({ message });
     expect(process.exit).not.toHaveBeenCalled();
   });
 });

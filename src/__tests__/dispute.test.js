@@ -25,23 +25,23 @@ describe('Dispute', () => {
   });
 
   describe('runWithArgs()', () => {
-    it('invokes commands ', () => {
+    it('invokes commands', async () => {
       const command = jest.fn();
       const cli = createCli({ commandName, pkg, cli: { command } });
 
       expect(command).not.toHaveBeenCalled();
-      const { options } = cli.runWithArgs([]);
+      const { options } = await cli.runWithArgs([]);
       expect(command).toHaveBeenCalledWith(options);
     });
 
-    it('throws if no command can be resolved', () => {
+    it('throws if no command can be resolved', async () => {
       const cli = createCli({ commandName, pkg });
-      const fail = () => cli.runWithArgs([]);
+      const promise = cli.runWithArgs([]);
 
-      expect(fail).toThrow();
+      await expect(promise).rejects.toEqual(expect.anything());
     });
 
-    it('includes the promisified command output', async () => {
+    it('resolves with the command output', async () => {
       const output = 'command return value';
       const commands = { command: () => output };
       const cli = createCli({
@@ -50,9 +50,18 @@ describe('Dispute', () => {
         pkg,
       });
 
-      const result = cli.runWithArgs([]);
+      const result = await cli.runWithArgs([]);
 
-      await expect(result.output).resolves.toBe(output);
+      expect(result.output).toBe(output);
+    });
+
+    it('rejects if the command rejects', async () => {
+      const err = 'Testing dispute(...) command rejections';
+      const command = () => Promise.reject(err);
+      const cli = createCli({ pkg, commandName, cli: { command } });
+      const promise = cli.runWithArgs([]);
+
+      expect(promise).rejects.toBe(err);
     });
   });
 });
