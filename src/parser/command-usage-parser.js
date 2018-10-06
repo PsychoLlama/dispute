@@ -7,6 +7,7 @@ export type Argument = {
   variadic: boolean,
   type: 'Argument',
   name: string,
+  raw: string,
 };
 
 export default function parseCommandUsage(usage: string): Argument[] {
@@ -24,7 +25,7 @@ export default function parseCommandUsage(usage: string): Argument[] {
 
   const readArgument = (): Argument => {
     const arg: ArgToken = readAnyToken();
-    const { name, variadic, required, type } = arg;
+    const { name, variadic, required, type, raw } = arg;
     assertValidArgumentOrdering(arg);
 
     return {
@@ -32,6 +33,7 @@ export default function parseCommandUsage(usage: string): Argument[] {
       variadic,
       name,
       type,
+      raw,
     };
   };
 

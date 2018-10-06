@@ -16,6 +16,7 @@ describe('Command usage parser', () => {
         type: 'Argument',
         required: false,
         variadic: false,
+        raw: '[dir]',
         name: 'dir',
       },
     ]);

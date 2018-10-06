@@ -89,6 +89,16 @@ describe('handleKnownErrors(...)', () => {
     expect(process.exit).toHaveBeenCalledWith(10);
   });
 
+  it('exits non-zero for parse errors', () => {
+    const wrapped = handleKnownErrors(options, () => {
+      throw new ParseError(message);
+    });
+
+    wrapped();
+
+    expect(process.exit).toHaveBeenCalledWith(1);
+  });
+
   it('prints the error to the console', () => {
     const wrapped = handleKnownErrors(options, () => {
       throw new ParseError(message);

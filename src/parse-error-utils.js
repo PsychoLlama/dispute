@@ -26,15 +26,9 @@ export class FatalError extends Error {
 
 // Same implementation as Error. The only advantage is
 // the ability to distinguish it from other errors.
-export class ParseError extends Error {
+export class ParseError extends FatalError {
   constructor(message: string) {
-    super(message);
-
-    Object.defineProperty(this, KNOWN_ERROR_KEY, {
-      enumerable: false,
-      writable: false,
-      value: true,
-    });
+    super(message, 1);
   }
 }
 
