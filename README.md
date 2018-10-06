@@ -58,6 +58,6 @@ cli.execute()
 ```
 
 ## Roadmap
-- [ ] Generate help output from command metadata (high priority)
-- [ ] Add better documentation
-- [ ] Automatically generate an SDK from your command line app
+- Generate help output from command metadata (high priority)
+- Add better documentation
+- Automatically generate an SDK from your command line app
