@@ -32,8 +32,8 @@ type CommandOptionsLoose = CommandOptions<{
   usage: string,
 }>;
 
-export type Config = {
-  subCommands?: Subcommands<Config>,
+export type CommandConfig = {
+  subCommands?: Subcommands<CommandConfig>,
   options?: CommandOptionsLoose,
   command?: Command,
   args?: string,
@@ -59,7 +59,7 @@ export type CommandTree = {
  * Recursively parse, validate, and provide defaults for all commands.
  */
 export default function normalizeCommands(
-  config: Config,
+  config: CommandConfig,
   metadata: {
     parent?: CommandTree | null,
     commandPath?: string[],
@@ -127,7 +127,7 @@ const normalizeSubcommands = ({
   commands,
   parent,
 }: {
-  commands: Subcommands<Config>,
+  commands: Subcommands<CommandConfig>,
   commandPath: string[],
   parent: CommandTree,
 }): Subcommands<CommandTree> => {

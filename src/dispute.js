@@ -1,14 +1,14 @@
 // @flow
+import normalizeConfig, { type Config } from './normalize-config';
 import { handleKnownErrors, FatalError } from './parse-error-utils';
-import normalizeConfig, { type Config } from './normalize-commands';
 import parseArgv from './argv-resolver';
 
-export const createCli = (config: Config) => {
-  const commandTree = normalizeConfig(config);
+export const createCli = (sparseConfig: Config) => {
+  const config = normalizeConfig(sparseConfig);
 
   return {
     runWithArgs: handleKnownErrors({}, (argv: string[]) => {
-      const result = parseArgv(commandTree, argv);
+      const result = parseArgv(config.cli, argv);
       const { command, args, options } = result;
 
       if (!command.command) {
