@@ -249,6 +249,12 @@ describe('Tokenizer', () => {
     expect(fail).toThrow(/\./);
   });
 
+  it('dies if the input ends unexpectedly', () => {
+    const fail = () => tokenize('<arg..');
+
+    expect(fail).toThrow(/string ended/i);
+  });
+
   describe('isType', () => {
     it('returns false if it does not match', () => {
       const tokenizer = createTokenizer(createStream('[arg]'));
