@@ -23,8 +23,17 @@
   "engines": {
     "node": ">=6.0.0"
   },
-  "repository": "https://github.com/PsychoLlama/dispute.git",
-  "keywords": [],
+  "repository": "https://github.com/PsychoLlama/dispute",
+  "keywords": [
+    "argument",
+    "args",
+    "flag",
+    "switch",
+    "parser",
+    "command",
+    "terminal",
+    "CLI"
+  ],
   "author": "Jesse Gibson <JesseTheGibson@gmail.com>",
   "license": "MIT",
   "devDependencies": {
@@ -48,6 +57,5 @@
     "babel-runtime": "^6.26.0",
     "chalk": "^2.4.1",
     "minimalistic-assert": "^1.0.1"
-  },
-  "private": false
+  }
 }
