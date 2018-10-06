@@ -85,7 +85,7 @@ describe('option-parser', () => {
   });
 
   it('removes consumed arguments from the arguments list', () => {
-    const root = { command() {}, options };
+    const root = { command() {}, options, args: '[anything]' };
     const result = parse(root, ['--inc', '50', 'arg']);
 
     expect(result.args).toEqual(['arg']);

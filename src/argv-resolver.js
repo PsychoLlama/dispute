@@ -1,5 +1,6 @@
 // @flow
 import type { CommandTree } from './normalize-config';
+import validateArguments from './argument-validator';
 import resolveSubCommand from './command-resolver';
 import parseArgv from './argv-parser';
 
@@ -14,6 +15,7 @@ export default (commandTree: CommandTree, argv: string[]) => {
   );
 
   const { options, args } = parseArgv(command, subCommandArgs);
+  validateArguments(command, args);
 
   return {
     command,
