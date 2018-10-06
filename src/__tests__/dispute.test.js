@@ -2,7 +2,15 @@
 import { handleKnownErrors } from '../error-utils';
 import { createCli } from '../dispute';
 
-jest.mock('../error-utils');
+// Only mock `handleKnownErrors`.
+jest.mock('../error-utils', () => {
+  const module = (require: Object).requireActual('../error-utils');
+
+  return {
+    ...module,
+    handleKnownErrors: jest.fn(),
+  };
+});
 
 describe('Dispute', () => {
   const commandName = 'unit-test';
