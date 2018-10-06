@@ -7,7 +7,7 @@ import parseArgv from './argv-resolver';
 export const createCli = (sparseConfig: Config) => {
   const config = normalizeConfig(sparseConfig);
 
-  const runWithArgs = async (argv: string[]) => {
+  const execute = async (argv: string[] = process.argv.slice(2)) => {
     const result = parseArgv(config.cli, argv);
     const { command, args, options } = result;
 
@@ -25,10 +25,10 @@ export const createCli = (sparseConfig: Config) => {
   };
 
   return {
-    runWithArgs: handleKnownErrors({}, runWithArgs),
+    execute: handleKnownErrors({}, execute),
     createTestInterface: () => {
       return async (...args: string[]) => {
-        const { output } = await runWithArgs(args);
+        const { output } = await execute(args);
         return output;
       };
     },

@@ -28,23 +28,23 @@ describe('Dispute', () => {
     });
 
     expect(cli).toMatchObject({
-      runWithArgs: expect.any(Function),
+      execute: expect.any(Function),
     });
   });
 
-  describe('runWithArgs()', () => {
+  describe('execute()', () => {
     it('invokes commands', async () => {
       const command = jest.fn();
       const cli = createCli({ commandName, packageJson, cli: { command } });
 
       expect(command).not.toHaveBeenCalled();
-      const { options } = await cli.runWithArgs([]);
+      const { options } = await cli.execute([]);
       expect(command).toHaveBeenCalledWith(options);
     });
 
     it('throws if no command can be resolved', async () => {
       const cli = createCli({ commandName, packageJson });
-      const promise = cli.runWithArgs([]);
+      const promise = cli.execute([]);
 
       await expect(promise).rejects.toEqual(expect.anything());
     });
@@ -58,7 +58,7 @@ describe('Dispute', () => {
         packageJson,
       });
 
-      const result = await cli.runWithArgs([]);
+      const result = await cli.execute([]);
 
       expect(result.output).toBe(output);
     });
@@ -67,9 +67,21 @@ describe('Dispute', () => {
       const err = 'Testing dispute(...) command rejections';
       const command = () => Promise.reject(err);
       const cli = createCli({ packageJson, commandName, cli: { command } });
-      const promise = cli.runWithArgs([]);
+      const promise = cli.execute([]);
 
       expect(promise).rejects.toBe(err);
+    });
+
+    // There's noooo way this could bite me.
+    it('uses the process argv by default', async () => {
+      process.argv = process.argv.slice(0, 2).concat(['remote', 'arg']);
+
+      const remote = { command: jest.fn(), args: '<arg>' };
+      const commands = { subCommands: { remote } };
+      const config = { packageJson, commandName, cli: commands };
+      await createCli(config).execute();
+
+      expect(remote.command).toHaveBeenCalledWith({}, 'arg');
     });
   });
 
