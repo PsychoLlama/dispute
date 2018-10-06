@@ -16,40 +16,42 @@ type PkgJson = {
 };
 
 export type Config = {
+  packageJson: PkgJson,
   commandName: string,
   cli?: CommandConfig,
-  pkg: PkgJson,
 };
 
 export type NormalizedConfig = {
-  commandName: string,
+  packageJson: PkgJson,
   cli: CommandTree,
-  pkg: PkgJson,
 };
 
 /**
  * Validate, index, and add defaults for the config object.
  */
-export default function normalizeConfig(config: Config): NormalizedConfig {
+export default function normalizeConfig({
+  commandName,
+  packageJson,
+  cli,
+}: Config): NormalizedConfig {
   assert(
-    config.commandName,
+    commandName,
     `Missing ${chalk.red('config.commandName')}. What is your CLI named?`
   );
 
   assert(
-    config.pkg,
+    packageJson,
     `Missing ${chalk.red(
-      'config.pkg'
+      'config.packageJson'
     )}. Import your package.json and add it here.`
   );
 
-  const cli: CommandTree = normalizeCommands(config.cli || {}, {
-    name: config.commandName,
+  const commands: CommandTree = normalizeCommands(cli || {}, {
+    name: commandName,
   });
 
   return {
-    commandName: '',
-    pkg: config.pkg,
-    cli,
+    cli: commands,
+    packageJson,
   };
 }

@@ -7,12 +7,12 @@ describe('Config normalizer', () => {
     command() {},
   };
 
-  const pkg = {
+  const packageJson = {
     version: '1.2.3',
   };
 
   it('normalizes all commands', () => {
-    const config = { commandName: 'cmd', cli, pkg };
+    const config = { commandName: 'cmd', cli, packageJson };
     const result = normalize(config);
 
     expect(result).toMatchObject({
@@ -24,7 +24,7 @@ describe('Config normalizer', () => {
   });
 
   it('throws if the command name is omitted', () => {
-    const config: any = { cli, pkg };
+    const config: any = { cli, packageJson };
     const fail = () => normalize(config);
 
     expect(fail).toThrow(/(command name|commandName)/i);
@@ -38,7 +38,7 @@ describe('Config normalizer', () => {
   });
 
   it('uses an empty CLI implementation if none is provided', () => {
-    const config = { commandName: 'cmd', pkg };
+    const config = { commandName: 'cmd', packageJson };
     const result = normalize(config);
 
     expect(result.cli).toMatchObject({

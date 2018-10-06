@@ -6,7 +6,7 @@ jest.mock('../error-utils');
 
 describe('Dispute', () => {
   const commandName = 'unit-test';
-  const pkg = { version: '4.5.6' };
+  const packageJson = { version: '4.5.6' };
 
   beforeEach(() => {
     jest.clearAllMocks();
@@ -16,7 +16,7 @@ describe('Dispute', () => {
   it('creates a CLI', () => {
     const cli = createCli({
       commandName,
-      pkg,
+      packageJson,
     });
 
     expect(cli).toMatchObject({
@@ -27,7 +27,7 @@ describe('Dispute', () => {
   describe('runWithArgs()', () => {
     it('invokes commands', async () => {
       const command = jest.fn();
-      const cli = createCli({ commandName, pkg, cli: { command } });
+      const cli = createCli({ commandName, packageJson, cli: { command } });
 
       expect(command).not.toHaveBeenCalled();
       const { options } = await cli.runWithArgs([]);
@@ -35,7 +35,7 @@ describe('Dispute', () => {
     });
 
     it('throws if no command can be resolved', async () => {
-      const cli = createCli({ commandName, pkg });
+      const cli = createCli({ commandName, packageJson });
       const promise = cli.runWithArgs([]);
 
       await expect(promise).rejects.toEqual(expect.anything());
@@ -47,7 +47,7 @@ describe('Dispute', () => {
       const cli = createCli({
         cli: commands,
         commandName,
-        pkg,
+        packageJson,
       });
 
       const result = await cli.runWithArgs([]);
@@ -58,7 +58,7 @@ describe('Dispute', () => {
     it('rejects if the command rejects', async () => {
       const err = 'Testing dispute(...) command rejections';
       const command = () => Promise.reject(err);
-      const cli = createCli({ pkg, commandName, cli: { command } });
+      const cli = createCli({ packageJson, commandName, cli: { command } });
       const promise = cli.runWithArgs([]);
 
       expect(promise).rejects.toBe(err);
