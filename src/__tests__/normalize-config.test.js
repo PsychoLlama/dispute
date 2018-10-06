@@ -9,13 +9,12 @@ describe('normalize-config', () => {
     expect(result).toMatchObject({
       subCommands: {},
       options: {},
-      args: null,
+      args: [],
     });
   });
 
   it('leaves defined fields alone', () => {
     const config = {
-      args: '<directory>',
       command() {},
       options: {
         quiet: { usage: '-q' },
@@ -28,7 +27,6 @@ describe('normalize-config', () => {
     const result = normalize(config);
 
     expect(result.subCommands).toMatchObject(config.subCommands);
-    expect(result.args).toBe(config.args);
   });
 
   it('recursively adds defaults', () => {
@@ -46,7 +44,7 @@ describe('normalize-config', () => {
 
     expect(result.subCommands.remote.subCommands).toEqual({});
     expect(result.subCommands.remote.options).toEqual({});
-    expect(result.subCommands.remote.args).toBe(null);
+    expect(result.subCommands.remote.args).toEqual([]);
   });
 
   it('adds default parsers to each command option', () => {
@@ -155,5 +153,18 @@ describe('normalize-config', () => {
     expect(result.name).toBe(null);
     expect(result.subCommands.remote.name).toBe('remote');
     expect(result.subCommands.remote.subCommands.add.name).toBe('add');
+  });
+
+  it('parses command arg usage', () => {
+    const config = { command() {}, args: '<files...>' };
+    const result = normalize(config);
+
+    expect(result.args).toEqual([
+      expect.objectContaining({
+        required: true,
+        variadic: true,
+        name: 'files',
+      }),
+    ]);
   });
 });

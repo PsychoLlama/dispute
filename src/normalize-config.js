@@ -1,6 +1,9 @@
 // @flow
 import assert from 'minimalistic-assert';
 
+import parseCommandUsage, {
+  type Argument,
+} from './parser/command-usage-parser';
 import parseOptionUsage, { type Usage } from './parser/option-usage-parser';
 import * as parseOption from './parse-option';
 
@@ -48,8 +51,8 @@ export type CommandTree = {
   options: CommandOptionsStrict,
   parent: CommandTree | null,
   name: string | null,
-  args: string | null,
   command?: Command,
+  args: Argument[],
 };
 
 /**
@@ -63,7 +66,7 @@ export default function normalizeConfig(
     name?: string | null,
   } = {}
 ): CommandTree {
-  const { command, subCommands = {}, options = {}, args = null } = config;
+  const { command, subCommands = {}, options = {}, args = '' } = config;
   const { parent = null, commandPath = [], name = null } = metadata;
 
   // A tiny bit of validation.
@@ -83,9 +86,9 @@ export default function normalizeConfig(
 
   const normalizedCommand = {};
   Object.assign(normalizedCommand, {
+    args: parseCommandUsage(args),
     command,
     parent,
-    args,
     name,
   });
 
