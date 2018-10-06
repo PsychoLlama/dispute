@@ -1,5 +1,5 @@
 // @flow
-import normalizeConfig from '../normalize-config';
+import normalizeConfig from '../normalize-commands';
 import resolveInvocation from '../argv-resolver';
 
 const resolve = (config, argv: string[]) =>

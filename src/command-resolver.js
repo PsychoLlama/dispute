@@ -1,5 +1,5 @@
 // @flow
-import type { CommandTree } from './normalize-config';
+import type { CommandTree } from './normalize-commands';
 import { looksLikeFlag } from './normalize-argv';
 
 type ParsedCommand = {

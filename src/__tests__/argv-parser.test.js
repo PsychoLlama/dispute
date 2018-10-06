@@ -1,6 +1,6 @@
 // @flow
 import * as parseOption from '../parse-option';
-import normalize from '../normalize-config';
+import normalize from '../normalize-commands';
 import parseArgv from '../argv-parser';
 
 const parse = (config, argv) => parseArgv(normalize(config), argv);

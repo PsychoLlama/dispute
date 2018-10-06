@@ -1,6 +1,6 @@
 // @flow
 import { handleKnownErrors, FatalError } from './parse-error-utils';
-import normalizeConfig, { type Config } from './normalize-config';
+import normalizeConfig, { type Config } from './normalize-commands';
 import parseArgv from './argv-resolver';
 
 export const createCli = (config: Config) => {

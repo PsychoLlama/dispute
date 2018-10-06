@@ -1,6 +1,6 @@
 // @flow
 import validateArguments from '../argument-validator';
-import normalizeConfig from '../normalize-config';
+import normalizeConfig from '../normalize-commands';
 
 const validate = (config, args) => {
   const commandTree = normalizeConfig({ command() {}, ...config });

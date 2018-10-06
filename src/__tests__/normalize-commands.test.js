@@ -1,8 +1,8 @@
 // @flow
 import * as parseOption from '../parse-option';
-import normalize from '../normalize-config';
+import normalize from '../normalize-commands';
 
-describe('normalize-config', () => {
+describe('Command normalizer', () => {
   it('returns a command tree with defaults', () => {
     const result = normalize({});
 

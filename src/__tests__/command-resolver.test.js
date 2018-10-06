@@ -1,5 +1,5 @@
 // @flow
-import normalizeConfig from '../normalize-config';
+import normalizeConfig from '../normalize-commands';
 import resolveCommand from '../command-resolver';
 
 const parse = (config, argv) => resolveCommand(normalizeConfig(config), argv);

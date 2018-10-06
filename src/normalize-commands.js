@@ -56,9 +56,9 @@ export type CommandTree = {
 };
 
 /**
- * Validate the config object and provide defaults recursively.
+ * Recursively parse, validate, and provide defaults for all commands.
  */
-export default function normalizeConfig(
+export default function normalizeCommands(
   config: Config,
   metadata: {
     parent?: CommandTree | null,
@@ -136,7 +136,7 @@ const normalizeSubcommands = ({
   return commandNames.reduce((subCommands, commandName) => {
     const command = commands[commandName];
     const path = commandPath.concat(commandName);
-    subCommands[commandName] = normalizeConfig(command, {
+    subCommands[commandName] = normalizeCommands(command, {
       commandPath: path,
       name: commandName,
       parent,
