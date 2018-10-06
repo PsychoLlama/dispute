@@ -1,5 +1,5 @@
 // @flow
-import * as parseOption from '../parse-option';
+import * as parseOption from '../parse-value';
 import normalize from '../normalize-commands';
 
 describe('Command normalizer', () => {

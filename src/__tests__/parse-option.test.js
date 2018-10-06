@@ -1,5 +1,5 @@
 // @flow
-import * as parseOption from '../parse-option';
+import * as parseOption from '../parse-value';
 
 describe('Parse option', () => {
   const createParseError = jest.fn(

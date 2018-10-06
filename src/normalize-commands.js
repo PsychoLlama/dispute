@@ -5,7 +5,7 @@ import parseCommandUsage, {
   type Argument,
 } from './parser/command-usage-parser';
 import parseOptionUsage, { type Usage } from './parser/option-usage-parser';
-import * as parseOption from './parse-option';
+import * as parseOption from './parse-value';
 
 type Options = {};
 type Command = (options: Options) => mixed;
