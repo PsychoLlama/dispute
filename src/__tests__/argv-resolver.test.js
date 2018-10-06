@@ -34,4 +34,11 @@ describe('argv resolver', () => {
 
     expect(fail).toThrow(/dirs/);
   });
+
+  it('throws if any invalid options exist', () => {
+    const root = { command() {} };
+    const fail = () => resolve(root, ['--port']);
+
+    expect(fail).toThrow(/port/);
+  });
 });

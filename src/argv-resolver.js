@@ -1,7 +1,10 @@
 // @flow
+import chalk from 'chalk';
+
 import type { CommandTree } from './normalize-config';
 import validateArguments from './argument-validator';
 import resolveSubCommand from './command-resolver';
+import { FatalError } from './parse-error-utils';
 import parseArgv from './argv-parser';
 
 /**
@@ -14,8 +17,17 @@ export default (commandTree: CommandTree, argv: string[]) => {
     argv
   );
 
-  const { options, args } = parseArgv(command, subCommandArgs);
+  const { options, args, invalidOptions } = parseArgv(command, subCommandArgs);
   validateArguments(command, args);
+
+  // It's a full list for convenience, even though
+  // only the first invalid option gets reported.
+  if (invalidOptions.length) {
+    const unknownFlag = chalk.red(invalidOptions[0]);
+    throw new FatalError(
+      `${chalk.red('Error')}: Unknown option ${unknownFlag}.`
+    );
+  }
 
   return {
     command,
