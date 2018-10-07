@@ -1,5 +1,5 @@
 # Changelog
-`dispute` follows [this changelog style](https://keepachangelog.com/)
+`dispute` follows [this changelog style](https://keepachangelog.com/) and adheres to [semver](https://semver.org/).
 
 ## `0.1.2`
 ### Fixed
