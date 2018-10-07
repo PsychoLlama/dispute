@@ -23,6 +23,9 @@
   "engines": {
     "node": ">=6.0.0"
   },
+  "files": [
+    "dist/"
+  ],
   "repository": "https://github.com/PsychoLlama/dispute",
   "keywords": [
     "argument",
