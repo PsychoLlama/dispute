@@ -1,7 +1,7 @@
 # Dispute
 A tool for building command line interfaces.
 
-[![Travis (.org) master status](https://img.shields.io/travis/PsychoLlama/dispute/master.svg?style=popout-square)](https://github.com/PsychoLlama/dispute)
+[![Travis (.org) master status](https://img.shields.io/travis/PsychoLlama/dispute/master.svg?style=popout-square)](https://travis-ci.org/PsychoLlama/dispute)
 [![npm](https://img.shields.io/npm/v/dispute.svg?style=popout-square)](https://www.npmjs.com/package/dispute)
 
 ## Purpose
