@@ -7,8 +7,11 @@ import parseCommandUsage, {
 import parseOptionUsage, { type Usage } from './parser/option-usage-parser';
 import * as parseOption from './parse-value';
 
-type Options = {};
-type Command = (options: Options) => mixed;
+// The best options type signature I can offer is `Object`.
+// I've tried to get clever with `$ObjMap<$Call<...>>` and
+// wasted way too much time. If the user wants typed options,
+// they'll need to define it themselves.
+type Command = (options: Object, ...args: string[]) => mixed;
 
 type CommandOption = {
   parseValue?: ParseValue,
