@@ -53,9 +53,9 @@ export type CommandTree = {
   subCommands: Subcommands<CommandTree>,
   options: CommandOptionsStrict,
   parent: CommandTree | null,
-  name: string | null,
   command?: Command,
   args: Argument[],
+  name: string,
 };
 
 /**
@@ -66,11 +66,11 @@ export default function normalizeCommands(
   metadata: {
     parent?: CommandTree | null,
     commandPath?: string[],
-    name?: string | null,
+    name?: string,
   } = {}
 ): CommandTree {
   const { command, subCommands = {}, options = {}, args = '' } = config;
-  const { parent = null, commandPath = [], name = null } = metadata;
+  const { parent = null, commandPath = [], name = 'unit-test' } = metadata;
 
   // A tiny bit of validation.
   if (!command) {
