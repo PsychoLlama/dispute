@@ -1,6 +1,13 @@
 # Changelog
 `dispute` follows [this changelog style](https://keepachangelog.com/) and adheres to [semver](https://semver.org/).
 
+## Unreleased
+### Added
+- New `ExitCode(...)` class takes the role of `FatalError(...)` without requiring a log message.
+
+### Changed
+- Now `cli.execute(...)` rejects when commands fail instead of just returning the errors.
+
 ## `0.1.2`
 ### Fixed
 - Fixes the `.command(...)` Flow type by loosening type constraints. Any command that accepted arguments or options was affected.
