@@ -1,18 +1,41 @@
 // @flow
 import {
+  ExitCode,
   FatalError,
-  ParseError,
   isKnownError,
   handleKnownErrors,
 } from '../error-utils';
 
-describe('FatalError', () => {
-  const message = 'Testing FatalError(...)';
-  it('creates an error instance', () => {
-    const error = new FatalError(message, 1);
+describe('ExitCode', () => {
+  it('is an error', () => {
+    const error = new ExitCode(5);
 
     expect(error).toEqual(expect.any(Error));
+    expect(isKnownError(error)).toBe(true);
   });
+
+  it('exposes the exit code', () => {
+    const error = new ExitCode(3);
+
+    expect(error).toMatchObject({ exitCode: 3 });
+  });
+
+  it('sets some default message', () => {
+    const error = new ExitCode(3);
+
+    expect(error.message).toMatch(/exit/i);
+  });
+
+  // Prevents weird boolean `exitCode || 1` stuff.
+  it('works with exit code 0', () => {
+    const error = new ExitCode(0);
+
+    expect(error).toMatchObject({ exitCode: 0 });
+  });
+});
+
+describe('FatalError', () => {
+  const message = 'Testing FatalError(...)';
 
   it('assigns the given message', () => {
     const error = new FatalError(message, 1);
@@ -36,7 +59,7 @@ describe('FatalError', () => {
 describe('isKnownError', () => {
   it('returns true for known errors', () => {
     expect(isKnownError(new FatalError('hi'))).toBe(true);
-    expect(isKnownError(new ParseError('hi'))).toBe(true);
+    expect(isKnownError(new ExitCode(1))).toBe(true);
   });
 
   it('returns false for unknown errors', () => {
@@ -52,7 +75,6 @@ describe('isKnownError', () => {
 describe('handleKnownErrors(...)', () => {
   const message = 'Testing handleKnownErrors(...)';
   const options = {
-    checkTestEnvBeforeExiting: false,
     log: jest.fn(),
   };
 
@@ -71,11 +93,11 @@ describe('handleKnownErrors(...)', () => {
 
   it('forwards input and output if no errors occur', async () => {
     const input = ['1', '2', '3'];
-    const handler = jest.fn().mockReturnValue('return value');
+    const handler = jest.fn().mockResolvedValue('return value');
     const wrapped = handleKnownErrors(options, handler);
-    const result = await wrapped(...input);
+    const result = await wrapped(input);
 
-    expect(handler).toHaveBeenCalledWith(...input);
+    expect(handler).toHaveBeenCalledWith(input);
     expect(result).toBe('return value');
   });
 
@@ -84,49 +106,50 @@ describe('handleKnownErrors(...)', () => {
       throw new FatalError(message, 10);
     });
 
-    await expect(wrapped()).resolves.toMatchObject({ exitCode: 10 });
+    await expect(wrapped()).rejects.toMatchObject({ exitCode: 10 });
     expect(process.exit).toHaveBeenCalledWith(10);
   });
 
   it('exits non-zero for parse errors', async () => {
     const wrapped = handleKnownErrors(options, () => {
-      throw new ParseError(message);
+      throw new FatalError(message);
     });
 
-    await wrapped();
+    await expect(wrapped()).rejects.toBeDefined();
 
     expect(process.exit).toHaveBeenCalledWith(1);
   });
 
   it('prints the error to the console', async () => {
     const wrapped = handleKnownErrors(options, () => {
-      throw new ParseError(message);
+      throw new FatalError(message);
     });
 
-    await wrapped();
+    await expect(wrapped()).rejects.toBeDefined();
 
     expect(options.log).toHaveBeenCalledWith(message);
   });
 
-  it('lets unknown errors fall through', async () => {
+  it('ignores `ExitCode` error messages', async () => {
+    const wrapped = handleKnownErrors(options, () => {
+      throw new ExitCode(1);
+    });
+
+    await expect(wrapped()).rejects.toBeDefined();
+
+    expect(options.log).not.toHaveBeenCalled();
+  });
+
+  it('prints unknown errors and exits', async () => {
     const wrapped = handleKnownErrors(options, () => {
       throw new Error(message);
     });
 
-    await expect(wrapped()).rejects.toMatchObject({ message });
-  });
+    const error = await wrapped().catch(error => error);
 
-  it('does not exit in a test environment', async () => {
-    const enableTestEnvCheck = {
-      ...options,
-      checkTestEnvBeforeExiting: true,
-    };
-
-    const wrapped = handleKnownErrors(enableTestEnvCheck, () => {
-      throw new FatalError(message);
-    });
-
-    await expect(wrapped()).rejects.toMatchObject({ message });
-    expect(process.exit).not.toHaveBeenCalled();
+    expect(error).toEqual(expect.any(Error));
+    expect(options.log).toHaveBeenCalledWith(error);
+    expect(process.exit).toHaveBeenCalledWith(1);
+    expect(process.exit).toHaveBeenCalledTimes(1);
   });
 });

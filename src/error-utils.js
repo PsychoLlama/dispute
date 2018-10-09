@@ -3,32 +3,45 @@ import chalk from 'chalk';
 
 // eslint-disable-next-line no-console
 const DEFAULT_ERROR_LOG = console.error;
+const ENABLE_ERROR_LOGGING = Symbol('Dispute: ENABLE_ERROR_LOGGING');
 const KNOWN_ERROR_KEY = Symbol('Dispute: KNOWN_ERROR_KEY');
 
-// Something unrecoverable happened. Print the error
-// message (without a stack trace) and exit with the
-// given code.
-export class FatalError extends Error {
+const noop = () => {};
+
+export class ExitCode extends Error {
   exitCode: number;
 
-  constructor(message: string, exitCode: number = 1) {
-    super(message);
+  constructor(exitCode: number) {
+    super(`Error: ExitCode(${exitCode})`);
 
-    this.exitCode = exitCode;
-
-    Object.defineProperty(this, KNOWN_ERROR_KEY, {
-      enumerable: false,
-      writable: false,
-      value: true,
+    Object.defineProperties(this, {
+      [KNOWN_ERROR_KEY]: {
+        enumerable: false,
+        writable: false,
+        value: true,
+      },
+      exitCode: {
+        enumerable: true,
+        writable: false,
+        value: exitCode,
+      },
     });
   }
 }
 
-// Same implementation as Error. The only advantage is
-// the ability to distinguish it from other errors.
-export class ParseError extends FatalError {
-  constructor(message: string) {
-    super(message, 1);
+// Something unrecoverable happened. Print the error
+// message (without a stack trace) and exit with the
+// given code.
+export class FatalError extends ExitCode {
+  exitCode: number;
+
+  constructor(message: string, exitCode: number = 1) {
+    super(exitCode);
+
+    this.message = message;
+    Object.defineProperty(this, ENABLE_ERROR_LOGGING, {
+      value: true,
+    });
   }
 }
 
@@ -43,7 +56,7 @@ export const makeParseErrorFactory = ({
   const trace = `at ${chalk.blue(flag)}`;
   const errorPrefix = `${chalk.red(prefix)} ${trace}`;
 
-  return new ParseError(`${errorPrefix}: ${msg}`);
+  return new FatalError(`${errorPrefix}: ${msg}`);
 };
 
 // Check the error for a secret flag.
@@ -53,36 +66,43 @@ export const isKnownError = (error: mixed) => {
   return Boolean(error[KNOWN_ERROR_KEY]);
 };
 
-const isTestEnv = () => {
-  return process.env.NODE_ENV === 'test';
+// By the time we make it here, the error has
+// been reported and the process is terminating.
+// Return a rejection, but keep it silent.
+const createHandledRejection = error => {
+  const rejection = Promise.reject(error);
+  rejection.catch(noop);
+
+  return rejection;
 };
 
 type ErrorHandlerOptions = {
-  checkTestEnvBeforeExiting?: boolean,
   log?: (msg: string) => void,
 };
 
-export const handleKnownErrors = (
+export const handleKnownErrors = <ArgType>(
   options: ErrorHandlerOptions,
-  fn: (...args: *) => *
-) => async (...args: *) => {
+  fn: (args: ArgType) => *
+) => async (args: ArgType): * => {
   /* istanbul ignore next */
-  const { checkTestEnvBeforeExiting = true, log = DEFAULT_ERROR_LOG } = options;
+  const { log = DEFAULT_ERROR_LOG } = options;
 
   try {
-    return await fn(...args);
+    return await fn(args);
   } catch (error) {
-    const shouldThrowNormally = checkTestEnvBeforeExiting ? isTestEnv() : false;
+    if (!isKnownError(error)) {
+      log(error);
+      process.exit(1);
 
-    // If it's a normal JavaScript error, continue throwing.
-    // If not, only exit outside the test window.
-    if (shouldThrowNormally || !isKnownError(error)) {
-      throw error;
+      return createHandledRejection(error);
     }
 
-    log(error.message);
+    if (error[ENABLE_ERROR_LOGGING]) {
+      log(error.message);
+    }
+
     process.exit(error.exitCode);
 
-    return error;
+    return createHandledRejection(error);
   }
 };
