@@ -12,7 +12,7 @@ export class ExitCode extends Error {
   exitCode: number;
 
   constructor(exitCode: number) {
-    super(`Error: ExitCode(${exitCode})`);
+    super(`ExitCode(${exitCode})`);
 
     Object.defineProperties(this, {
       [KNOWN_ERROR_KEY]: {

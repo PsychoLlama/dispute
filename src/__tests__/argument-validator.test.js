@@ -44,7 +44,7 @@ describe('Argument validator', () => {
   it('complains if unexpected arguments are provided', () => {
     const fail = () => validate({}, ['something']);
 
-    expect(fail).toThrow(/command/i);
+    expect(fail).toThrow(/arguments/i);
   });
 
   it('reports the command name if available', () => {
