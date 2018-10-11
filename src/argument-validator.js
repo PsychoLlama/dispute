@@ -8,7 +8,7 @@ export default function validateArguments(
   commandTree: CommandTree,
   givenArgs: string[]
 ) {
-  const commandName = commandTree.name ? `"${commandTree.name}"` : 'command';
+  const commandName = `"${commandTree.name}"`;
   const requiredArgs = commandTree.args.filter(arg => arg.required);
   const maxArguments = commandTree.args.reduce((sum, arg) => {
     return sum + (arg.variadic ? Infinity : 1);

@@ -150,7 +150,7 @@ describe('Command normalizer', () => {
     const config = { subCommands: { remote } };
     const result = normalize(config);
 
-    expect(result.name).toBe(null);
+    expect(result.name).toEqual(expect.any(String));
     expect(result.subCommands.remote.name).toBe('remote');
     expect(result.subCommands.remote.subCommands.add.name).toBe('add');
   });
