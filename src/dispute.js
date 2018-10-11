@@ -1,5 +1,6 @@
 // @flow
 import { handleKnownErrors, FatalError, ExitCode } from './error-utils';
+import generateHelpPage, { getCommandPath } from './generate-help-page';
 import normalizeConfig, { type Config } from './normalize-config';
 import * as parseValue from './parse-value';
 import parseArgv from './argv-resolver';
@@ -12,8 +13,9 @@ export const createCli = (sparseConfig: Config) => {
     const { command, args, options } = result;
 
     if (!command.command) {
-      // TODO: generate and print the help page.
-      throw new FatalError('Invalid command');
+      const commandPath = getCommandPath(command).join(' ');
+      const help = generateHelpPage(command);
+      throw new FatalError(`"$ ${commandPath}" isn't a command.\n${help}`);
     }
 
     const output = await command.command(options, ...args);

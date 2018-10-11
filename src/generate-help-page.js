@@ -14,7 +14,7 @@ export const indent = (offset: number, content: string) => {
 };
 
 // ['cmd', 'sub', 'command']
-const getCommandPath = (command: CommandTree) => {
+export const getCommandPath = (command: CommandTree) => {
   const path = [command.name];
   let parent = command;
 
