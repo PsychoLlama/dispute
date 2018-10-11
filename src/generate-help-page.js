@@ -47,16 +47,46 @@ export const describeOptionUsage = ({ usage }: CommandOption) => {
   return `${short}${delimiter}${long}${arg}`;
 };
 
-export default function generateHelpPage(command: CommandTree) {
-  const commandUsage = describeCommandUsage(command);
-  const options = Object.keys(command.options)
-    .map(option => command.options[option])
+// --option1
+// --option2
+// --option3
+const describeOptions = (options: $PropertyType<CommandTree, 'options'>) => {
+  return Object.keys(options)
+    .map(option => options[option])
     .reduce((description, option, index) => {
       const newline = index ? '\n' : '';
       return description + newline + describeOptionUsage(option);
     }, '');
+};
 
-  const optionsUsage = options ? `\n\nOptions:\n\n${indent(2, options)}` : '';
+// - command1
+// - command2
+// - command3
+export const describeSubcommands = (
+  commands: $PropertyType<CommandTree, 'subCommands'>
+) => {
+  return Object.keys(commands)
+    .sort((a, b) => (a > b ? 1 : -1))
+    .reduce((subCommands, commandName, index) => {
+      const newline = index ? '\n' : '';
+      return `${subCommands}${newline}- ${commandName}`;
+    }, '');
+};
 
-  return `${commandUsage}${optionsUsage}`;
+export default function generateHelpPage(command: CommandTree) {
+  const summary = {
+    subCommands: describeSubcommands(command.subCommands),
+    options: describeOptions(command.options),
+  };
+
+  const commandUsage = describeCommandUsage(command);
+  const optionsUsage = summary.options
+    ? `\n\nOptions:\n\n${indent(2, summary.options)}`
+    : '';
+
+  const subcommandUsage = summary.subCommands
+    ? `\n\nCommands:\n\n${indent(2, summary.subCommands)}`
+    : '';
+
+  return `\n${commandUsage}${optionsUsage}${subcommandUsage}`;
 }
