@@ -42,4 +42,4 @@ export const createCli = (sparseConfig: Config) => {
   };
 };
 
-export { parseValue, FatalError, ExitCode };
+export { parseValue, ExitCode };

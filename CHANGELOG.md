@@ -1,12 +1,17 @@
 # Changelog
 `dispute` follows [this changelog style](https://keepachangelog.com/) and adheres to [semver](https://semver.org/).
 
-## Unreleased
+## `0.2.0`
 ### Added
 - New `ExitCode(...)` class takes the role of `FatalError(...)` without requiring a log message.
+- New help page generator inspired by commander's help output. Runs through global flag `--help`.
+- New `--version` global flag prints the package's version.
 
 ### Changed
 - Now `cli.execute(...)` rejects when commands fail instead of just returning the errors.
+
+### Removed
+- Old `FatalError` class. Use `ExitCode` instead.
 
 ## `0.1.2`
 ### Fixed
