@@ -1,9 +1,14 @@
 // @flow
-import * as parseOption from '../parse-value';
-import normalize from '../normalize-commands';
+import * as parseValue from '../parse-value';
+import normalize, { normalizeOptions } from '../normalize-commands';
 import parseArgv from '../argv-parser';
 
-const parse = (config, argv) => parseArgv(normalize(config), argv);
+const parse = (config, argv, globalOptions = {}) =>
+  parseArgv(
+    normalize(config),
+    normalizeOptions({ options: globalOptions, commandPath: [] }),
+    argv
+  );
 
 describe('option-parser', () => {
   const options = {
@@ -15,7 +20,7 @@ describe('option-parser', () => {
     },
     increment: {
       usage: '--inc [value]',
-      parseValue: parseOption.asNumber,
+      parseValue: parseValue.asNumber,
     },
   };
 
@@ -24,6 +29,7 @@ describe('option-parser', () => {
 
     expect(result).toEqual({
       invalidOptions: [],
+      globalOptions: {},
       options: {},
       args: [],
     });
@@ -53,7 +59,7 @@ describe('option-parser', () => {
   });
 
   it('parses conjoined short flags', () => {
-    const color = { usage: '-c', parseValue: parseOption.asBoolean };
+    const color = { usage: '-c', parseValue: parseValue.asBoolean };
     const root = { command() {}, options: { ...options, color } };
     const result = parse(root, ['-qc']);
 
@@ -109,5 +115,38 @@ describe('option-parser', () => {
         input: '',
       })
     );
+  });
+
+  it('parses out global options', () => {
+    const result = parse({}, ['--help'], {
+      help: { usage: '--help' },
+    });
+
+    expect(result.options).toEqual({});
+    expect(result.globalOptions).toMatchObject({
+      help: true,
+    });
+  });
+
+  it('does not mark global options as invalid', () => {
+    const result = parse({}, ['--help'], {
+      help: { usage: '--help' },
+    });
+
+    expect(result.invalidOptions).toEqual([]);
+  });
+
+  it('prefers command options over global options', () => {
+    const options = {
+      color: { usage: '--color=<code>', parseValue: parseValue.asNumber },
+    };
+
+    const command = { command() {}, options };
+    const result = parse(command, ['--color', '5'], {
+      color: { usage: '--color' },
+    });
+
+    expect(result.globalOptions).toEqual({});
+    expect(result.options.color).toBe(5);
   });
 });

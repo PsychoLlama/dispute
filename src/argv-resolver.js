@@ -17,7 +17,12 @@ export default (commandTree: CommandTree, argv: string[]) => {
     argv
   );
 
-  const { options, args, invalidOptions } = parseArgv(command, subCommandArgs);
+  const { options, args, invalidOptions } = parseArgv(
+    command,
+    {},
+    subCommandArgs
+  );
+
   validateArguments(command, args);
 
   // It's a full list for convenience, even though

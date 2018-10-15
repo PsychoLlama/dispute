@@ -150,7 +150,7 @@ const normalizeSubcommands = ({
 };
 
 // Add defaults to every option.
-const normalizeOptions = ({
+export const normalizeOptions = ({
   options,
   commandPath,
 }: {

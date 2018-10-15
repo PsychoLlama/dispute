@@ -65,6 +65,7 @@ const extractPossibleArgument = (argvStack: string[]): ?string => {
 };
 
 type ParsedOutput = {
+  globalOptions: { [optionName: string]: mixed },
   options: { [optionName: string]: mixed },
   invalidOptions: string[],
   args: string[],
@@ -82,13 +83,19 @@ type ParsedOutput = {
  */
 export default function parseArgv(
   command: CommandTree,
+  globalOptions: Options,
   argv: string[]
 ): ParsedOutput {
+  const parsed: ParsedOutput = {
+    invalidOptions: [],
+    globalOptions: {},
+    options: {},
+    args: [],
+  };
+
   const flagIndex = indexOptions(command.options);
+  const globalFlagIndex = indexOptions(globalOptions);
   const stack = normalizeArgv(argv);
-  const invalidOptions = [];
-  const options = {};
-  const args = [];
 
   // The argv stack is consumed left to right.
   while (stack.length) {
@@ -96,17 +103,19 @@ export default function parseArgv(
 
     // Must be a command argument.
     if (!looksLikeFlag(arg)) {
-      args.push(arg);
+      parsed.args.push(arg);
       continue;
     }
 
     // Look up the option by the flag name.
-    const option = resolveOption(flagIndex, arg);
+    const commandOption = resolveOption(flagIndex, arg);
+    const globalOption = resolveOption(globalFlagIndex, arg);
+    const option = commandOption || globalOption;
 
     // We were just given an invalid flag. Collect any others
     // for a more complete debugging picture.
     if (!option) {
-      invalidOptions.push(arg);
+      parsed.invalidOptions.push(arg);
       continue;
     }
 
@@ -117,15 +126,13 @@ export default function parseArgv(
       option,
     });
 
-    options[option.optionName] = optionValue;
+    // Decide if this is a global or local option. Prefer local.
+    const optionsMap = commandOption ? parsed.options : parsed.globalOptions;
+    optionsMap[option.optionName] = optionValue;
 
     // Don't mistake the option's argument for a command argument.
     if (optionConsumedArgument) stack.shift();
   }
 
-  return {
-    invalidOptions,
-    options,
-    args,
-  };
+  return parsed;
 }
