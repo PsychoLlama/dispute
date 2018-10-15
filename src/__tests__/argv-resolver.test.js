@@ -41,4 +41,15 @@ describe('argv resolver', () => {
 
     expect(fail).toThrow(/port/);
   });
+
+  it('prints a help page if given the option', () => {
+    const root = { command() {} };
+    const fail = () => resolve(root, ['--help']);
+
+    expect(fail).toThrow(
+      expect.objectContaining({
+        exitCode: 0,
+      })
+    );
+  });
 });

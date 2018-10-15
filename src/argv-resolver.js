@@ -1,8 +1,9 @@
 // @flow
 import chalk from 'chalk';
 
-import type { CommandTree } from './normalize-commands';
+import { normalizeOptions, type CommandTree } from './normalize-commands';
 import validateArguments from './argument-validator';
+import generateHelpPage from './generate-help-page';
 import resolveSubCommand from './command-resolver';
 import { FatalError } from './error-utils';
 import parseArgv from './argv-parser';
@@ -17,11 +18,21 @@ export default (commandTree: CommandTree, argv: string[]) => {
     argv
   );
 
-  const { options, args, invalidOptions } = parseArgv(
+  const { options, args, globalOptions, invalidOptions } = parseArgv(
     command,
-    {},
+    normalizeOptions({
+      commandPath: [],
+      options: {
+        help: { usage: '-h, --help' },
+      },
+    }),
     subCommandArgs
   );
+
+  // Print the help page and exit successfully.
+  if (globalOptions.help) {
+    throw new FatalError(generateHelpPage(command), 0);
+  }
 
   validateArguments(command, args);
 

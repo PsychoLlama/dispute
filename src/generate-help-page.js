@@ -88,5 +88,7 @@ export default function generateHelpPage(command: CommandTree) {
     ? `\n\nCommands:\n\n${indent(2, summary.subCommands)}`
     : '';
 
-  return `\n${commandUsage}${optionsUsage}${subcommandUsage}`;
+  const helpOutput = commandUsage + optionsUsage + subcommandUsage;
+
+  return `\n${indent(2, helpOutput)}\n`;
 }
