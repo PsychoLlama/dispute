@@ -83,6 +83,16 @@ describe('Dispute', () => {
 
       expect(remote.command).toHaveBeenCalledWith({}, 'arg');
     });
+
+    it('prints the version if the global option is given', async () => {
+      const root = { packageJson, commandName, cli: {} };
+      const version = () => createCli(root).execute(['--version']);
+
+      await expect(version()).rejects.toMatchObject({
+        message: expect.stringContaining(packageJson.version),
+        exitCode: 0,
+      });
+    });
   });
 
   describe('createTestInterface', () => {

@@ -44,10 +44,11 @@ describe('argv resolver', () => {
 
   it('prints a help page if given the option', () => {
     const root = { command() {} };
-    const fail = () => resolve(root, ['--help']);
+    const help = () => resolve(root, ['--help']);
 
-    expect(fail).toThrow(
+    expect(help).toThrow(
       expect.objectContaining({
+        message: expect.stringMatching(/usage/i),
         exitCode: 0,
       })
     );

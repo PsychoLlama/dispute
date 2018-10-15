@@ -23,6 +23,7 @@ export default (commandTree: CommandTree, argv: string[]) => {
     normalizeOptions({
       commandPath: [],
       options: {
+        version: { usage: '-v, --version' },
         help: { usage: '-h, --help' },
       },
     }),
@@ -41,11 +42,13 @@ export default (commandTree: CommandTree, argv: string[]) => {
   if (invalidOptions.length) {
     const unknownFlag = chalk.red(invalidOptions[0]);
     throw new FatalError(
-      `${chalk.red('Error')}: Unknown option ${unknownFlag}.`
+      `${chalk.red('Error')}: Unknown option ${unknownFlag}.\n` +
+        generateHelpPage(command)
     );
   }
 
   return {
+    globalOptions,
     command,
     options,
     args,
