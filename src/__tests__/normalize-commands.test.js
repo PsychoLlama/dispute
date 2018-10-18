@@ -57,9 +57,9 @@ describe('Command normalizer', () => {
     const result = normalize(config);
 
     expect(result.options.quiet).toEqual({
-      ...quiet,
       parseValue: parseOption.asString,
       optionName: 'quiet',
+      description: null,
       usage: {
         argument: null,
         long: null,
@@ -166,5 +166,22 @@ describe('Command normalizer', () => {
         name: 'files',
       }),
     ]);
+  });
+
+  it('includes command descriptions', () => {
+    const description = 'Command description';
+    const config = { command() {}, description };
+    const result = normalize(config);
+
+    expect(result.description).toBe(description);
+  });
+
+  it('includes option descriptions', () => {
+    const description = 'Option description';
+    const add = { usage: '--add', description };
+    const config = { command() {}, options: { add } };
+    const result = normalize(config);
+
+    expect(result.options.add.description).toBe(description);
   });
 });

@@ -32,18 +32,21 @@ type CommandOptions<ParseValue: Object> = {
 // Loose type. Allows undefined fields.
 type CommandOptionsLoose = CommandOptions<{
   parseValue?: ParseValue,
+  description?: string,
   usage: string,
 }>;
 
 export type CommandConfig = {
   subCommands?: Subcommands<CommandConfig>,
   options?: CommandOptionsLoose,
+  description?: string,
   command?: Command,
   args?: string,
 };
 
 // Strict type. All fields must have defaults.
 type CommandOptionsStrict = CommandOptions<{
+  description: string | null,
   parseValue: ParseValue,
   optionName: string,
   usage: Usage,
@@ -52,6 +55,7 @@ type CommandOptionsStrict = CommandOptions<{
 export type CommandTree = {
   subCommands: Subcommands<CommandTree>,
   options: CommandOptionsStrict,
+  description: string | null,
   parent: CommandTree | null,
   command?: Command,
   args: Argument[],
@@ -69,8 +73,14 @@ export default function normalizeCommands(
     name?: string,
   } = {}
 ): CommandTree {
-  const { command, subCommands = {}, options = {}, args = '' } = config;
   const { parent = null, commandPath = [], name = 'unit-test' } = metadata;
+  const {
+    description = null,
+    subCommands = {},
+    options = {},
+    args = '',
+    command,
+  } = config;
 
   // A tiny bit of validation.
   if (!command) {
@@ -90,6 +100,7 @@ export default function normalizeCommands(
   const normalizedCommand = {};
   Object.assign(normalizedCommand, {
     args: parseCommandUsage(args),
+    description,
     command,
     parent,
     name,
@@ -157,23 +168,24 @@ export const normalizeOptions = ({
   options: CommandOptionsLoose,
   commandPath: string[],
 }): CommandOptionsStrict => {
-  const defaults = {
-    parseValue: parseOption.asString,
-  };
-
   const optionNames = Object.keys(options);
   return optionNames.reduce((commandOptions, optionName) => {
-    const option = options[optionName];
+    const {
+      parseValue = parseOption.asString,
+      description = null,
+      usage,
+    } = options[optionName];
+
     assert(
-      option.usage,
+      usage,
       `An option is missing the required '.usage' field.` +
         generateFieldTrace(commandPath, `options.${optionName}`)
     );
 
     commandOptions[optionName] = {
-      ...defaults,
-      ...option,
-      usage: parseOptionUsage(option.usage),
+      usage: parseOptionUsage(usage),
+      description,
+      parseValue,
       optionName,
     };
 
