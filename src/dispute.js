@@ -1,9 +1,10 @@
 // @flow
 import { handleKnownErrors, FatalError, ExitCode } from './error-utils';
-import generateHelpPage, { getCommandPath } from './generate-help-page';
 import normalizeConfig, { type Config } from './normalize-config';
+import { getCommandPath } from './help/command';
 import * as parseValue from './parse-value';
 import parseArgv from './argv-resolver';
+import generateHelpPage from './help';
 
 export const createCli = (sparseConfig: Config) => {
   const config = normalizeConfig(sparseConfig);

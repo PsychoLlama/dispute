@@ -3,9 +3,9 @@ import chalk from 'chalk';
 
 import { normalizeOptions, type CommandTree } from './normalize-commands';
 import validateArguments from './argument-validator';
-import generateHelpPage from './generate-help-page';
 import resolveSubCommand from './command-resolver';
 import { FatalError } from './error-utils';
+import generateHelpPage from './help';
 import parseArgv from './argv-parser';
 
 /**
