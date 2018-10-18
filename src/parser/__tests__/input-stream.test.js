@@ -1,8 +1,5 @@
 // @flow
-import createStream, {
-  addLeftPadding,
-  createErrorFrame,
-} from '../input-stream';
+import createStream, { createErrorFrame } from '../input-stream';
 
 describe('Input stream', () => {
   it('returns an interface', () => {
@@ -120,26 +117,6 @@ describe('Input stream', () => {
 
       const lines = frame.split('\n');
       expect(lines[1]).toMatch(/^\s{4}/);
-    });
-  });
-
-  describe('addLeftPadding', () => {
-    it('can pad a single line', () => {
-      const content = addLeftPadding(2, 'hello');
-
-      expect(content).toBe('  hello');
-    });
-
-    it('can pad multiple lines', () => {
-      const content = addLeftPadding(2, 'line1\nline2');
-
-      expect(content).toBe('  line1\n  line2');
-    });
-
-    it('can pad any amount', () => {
-      const content = addLeftPadding(4, 'line');
-
-      expect(content).toBe('    line');
     });
   });
 });

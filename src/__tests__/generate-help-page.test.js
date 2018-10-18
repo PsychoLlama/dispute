@@ -1,6 +1,5 @@
 // @flow
 import generateHelpPage, {
-  indent,
   describeSubcommands,
   describeOptionUsage,
   describeCommandUsage,
@@ -180,20 +179,6 @@ describe('Help page generator', () => {
       expect(lines[0]).toContain('add');
       expect(lines[1]).toContain('branch');
       expect(lines[2]).toContain('checkout');
-    });
-  });
-
-  describe('indent(...)', () => {
-    it('indents the given content', () => {
-      const result = indent(2, 'content');
-
-      expect(result).toBe('  content');
-    });
-
-    it('indents across multiple lines', () => {
-      const result = indent(2, 'line1\nline2\nline3');
-
-      expect(result).toBe('  line1\n  line2\n  line3');
     });
   });
 });

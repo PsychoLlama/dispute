@@ -1,17 +1,10 @@
 // @flow
+import indent from 'indent-string';
+
 import type { CommandTree } from './normalize-commands';
 
 type CommandOptions = $PropertyType<CommandTree, 'options'>;
 type CommandOption = $PropertyType<CommandOptions, 'index-key'>;
-
-export const indent = (offset: number, content: string) => {
-  const indentLevel = Array(offset)
-    .fill(' ')
-    .join('');
-
-  const lines = content.split('\n').map(line => indentLevel + line);
-  return lines.join('\n');
-};
 
 // ['cmd', 'sub', 'command']
 export const getCommandPath = (command: CommandTree) => {
@@ -81,14 +74,14 @@ export default function generateHelpPage(command: CommandTree) {
 
   const commandUsage = describeCommandUsage(command);
   const optionsUsage = summary.options
-    ? `\n\nOptions:\n\n${indent(2, summary.options)}`
+    ? `\n\nOptions:\n${indent(summary.options, 2)}`
     : '';
 
   const subcommandUsage = summary.subCommands
-    ? `\n\nCommands:\n\n${indent(2, summary.subCommands)}`
+    ? `\n\nCommands:\n${indent(summary.subCommands, 2)}`
     : '';
 
   const helpOutput = commandUsage + optionsUsage + subcommandUsage;
 
-  return `\n${indent(2, helpOutput)}\n`;
+  return `\n${indent(helpOutput, 2)}\n`;
 }

@@ -1,4 +1,5 @@
 // @flow
+import indent from 'indent-string';
 import chalk from 'chalk';
 
 export type Loc = {
@@ -24,17 +25,6 @@ type FrameDetails = {
   sourceText: string,
   length: number,
   loc: Loc,
-};
-
-export const addLeftPadding = (offset: number, text: string) => {
-  const offsetString = Array(offset)
-    .fill(' ')
-    .join('');
-
-  return text
-    .split('\n')
-    .map(line => offsetString + line)
-    .join('\n');
 };
 
 export const createErrorFrame = (frame: FrameDetails) => {
@@ -82,9 +72,7 @@ export default function createStream(sourceText: string) {
         sourceText,
       });
 
-      return new SyntaxError(
-        `${report.message}\n\n${addLeftPadding(2, frame)}\n`
-      );
+      return new SyntaxError(`${report.message}\n\n${indent(frame, 2)}\n`);
     },
 
     peek() {
