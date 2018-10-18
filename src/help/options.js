@@ -1,8 +1,20 @@
 // @flow
 import type { CommandTree } from '../normalize-commands';
+import { sortAlphabetically } from './utils';
 
 type CommandOptions = $PropertyType<CommandTree, 'options'>;
 type CommandOption = $PropertyType<CommandOptions, 'index-key'>;
+
+const getOptionSortableName = option => {
+  const name: any = option.usage.long || option.usage.short;
+  return (name: string);
+};
+
+const sortOptionsAlphabetically = (option1, option2) => {
+  const option1Name = getOptionSortableName(option1);
+  const option2Name = getOptionSortableName(option2);
+  return sortAlphabetically(option1Name, option2Name);
+};
 
 const describeOptionArg = ({ required, name }) =>
   required ? `<${name}>` : `[${name}]`;
@@ -17,14 +29,13 @@ export const describeOptionUsage = ({ usage }: CommandOption) => {
   return `${short}${delimiter}${long}${arg}`;
 };
 
-// --option1
-// --option2
-// --option3
+// -o, --option1
+//     --option2
+// -3, --option3
 export const describeOptions = (options: CommandOptions) => {
   return Object.keys(options)
     .map(option => options[option])
-    .reduce((description, option, index) => {
-      const newline = index ? '\n' : '';
-      return description + newline + describeOptionUsage(option);
-    }, '');
+    .sort(sortOptionsAlphabetically)
+    .map(describeOptionUsage)
+    .join('\n');
 };

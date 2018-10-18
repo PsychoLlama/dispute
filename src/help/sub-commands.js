@@ -1,5 +1,6 @@
 // @flow
 import type { CommandTree } from '../normalize-commands';
+import { sortAlphabetically } from './utils';
 
 const DESCRIPTION_CHAR_PADDING = 5;
 
@@ -19,8 +20,6 @@ const createDescriptionPadding = (commandNames: string[]) => {
     return commandName + endPadding;
   };
 };
-
-const sortAlphabetically = (a, b) => (a > b ? 1 : -1);
 
 // - command            description
 // - longer-command     description
