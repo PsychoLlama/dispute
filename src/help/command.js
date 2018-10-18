@@ -18,6 +18,7 @@ export default function describeCommandUsage(command: CommandTree) {
   const args = command.args.map(arg => arg.raw).join(' ');
   const spacing = command.args.length ? ' ' : '';
   const commandPath = getCommandPath(command).join(' ');
+  const description = command.description ? `\n\n${command.description}` : '';
 
-  return `Usage: ${commandPath}${spacing}${args}`;
+  return `Usage: ${commandPath}${spacing}${args}${description}`;
 }

@@ -34,4 +34,12 @@ describe('describeCommandUsage(...)', () => {
 
     expect(result).toContain(`${config.cli.name} run`);
   });
+
+  it('prints the description', () => {
+    const run = { command() {}, description: 'Execute any npm command' };
+    const config = createConfig(run);
+    const result = describeCommandUsage(config.cli);
+
+    expect(result).toContain(run.description);
+  });
 });
