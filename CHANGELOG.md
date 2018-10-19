@@ -1,6 +1,14 @@
 # Changelog
 `dispute` follows [this changelog style](https://keepachangelog.com/) and adheres to [semver](https://semver.org/).
 
+## Unreleased
+### Added
+- Support for command & option descriptions.
+
+### Changed
+- Refined help output looks closer to something docker would generate (I really like their help format).
+- `createCli(...)` now throws if an empty command object is given (i.e. missing both `command` and `subCommand` values).
+
 ## `0.2.0`
 ### Added
 - New `ExitCode(...)` class takes the role of `FatalError(...)` without requiring a log message.
