@@ -4,7 +4,7 @@ import normalize from '../normalize-commands';
 
 describe('Command normalizer', () => {
   it('returns a command tree with defaults', () => {
-    const result = normalize({});
+    const result = normalize({ command() {} });
 
     expect(result).toMatchObject({
       subCommands: {},
@@ -32,11 +32,7 @@ describe('Command normalizer', () => {
   it('recursively adds defaults', () => {
     const config = {
       subCommands: {
-        remote: {
-          'set-url': {
-            command() {},
-          },
-        },
+        remote: { command() {} },
       },
     };
 
@@ -112,7 +108,14 @@ describe('Command normalizer', () => {
         },
       });
 
-    expect(fail).toThrow(/config.options.quiet/i);
+    expect(fail).toThrow(/cli.options.quiet/i);
+  });
+
+  // No command, no sub-commands.
+  it('throws if the command is empty', () => {
+    const fail = () => normalize({ subCommands: {} });
+
+    expect(fail).toThrow(/config.cli/i);
   });
 
   it('parses option usage', () => {

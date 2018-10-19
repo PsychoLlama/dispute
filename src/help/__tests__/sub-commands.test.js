@@ -5,8 +5,8 @@ import describeSubCommands from '../sub-commands';
 const createConfig = config => {
   const { cli } = normalizeConfig({
     packageJson: { version: '1.2.3' },
+    cli: { command() {}, ...config },
     commandName: 'unit-test',
-    cli: config,
   });
 
   return cli.subCommands;

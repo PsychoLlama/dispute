@@ -12,7 +12,7 @@ const createConfig = config =>
 describe('Help page generator', () => {
   describe('generateHelpPage(...)', () => {
     it('returns a string', () => {
-      const config = createConfig({});
+      const config = createConfig({ command() {} });
       const result = generateHelpPage(config.cli);
 
       expect(result).toEqual(expect.any(String));

@@ -95,6 +95,13 @@ export default function normalizeCommands(
       `Options were defined for a command that doesn't exist.` +
         generateFieldTrace(commandPath, 'options')
     );
+
+    assert(
+      config.command || Object.keys(subCommands).length,
+      `CLI needs an implementation.\n` +
+        `Add a command(...) function or subCommands: {...}.` +
+        generateFieldTrace(commandPath)
+    );
   }
 
   const normalizedCommand = {};
@@ -123,16 +130,17 @@ export default function normalizeCommands(
 // Return a string like 'config.subCommands.init.options'.
 const describeConfigPath = (commandPath: string[]) => {
   const commandNamePrefix = commandPath.length
-    ? 'config.subCommands.'
-    : 'config';
+    ? 'config.cli.subCommands.'
+    : 'config.cli';
 
   return `${commandNamePrefix}${commandPath.join('.subCommands.')}`;
 };
 
-const generateFieldTrace = (commandPath: string[], field: string) => {
+const generateFieldTrace = (commandPath: string[], field?: string) => {
   const commandName = describeConfigPath(commandPath);
+  const property = field ? `.${field}` : '';
 
-  return `\n  At: ${commandName}.${field}`;
+  return `\n  At: ${commandName}${property}`;
 };
 
 // Recursively apply normalizeConfig(...) to each subcommand.

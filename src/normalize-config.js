@@ -6,6 +6,7 @@ import normalizeCommands, {
   type CommandTree,
   type CommandConfig,
 } from './normalize-commands';
+import { FatalError } from './error-utils';
 
 // Right now `version` is the only thing dispute depends
 // on. In the future it could be expanded to show
@@ -24,6 +25,12 @@ export type Config = {
 export type NormalizedConfig = {
   packageJson: PkgJson,
   cli: CommandTree,
+};
+
+const defaultCliImplementation = {
+  command() {
+    throw new FatalError('Define `config.cli` to start building your CLI.');
+  },
 };
 
 /**
@@ -46,9 +53,10 @@ export default function normalizeConfig({
     )}. Import your package.json and add it here.`
   );
 
-  const commands: CommandTree = normalizeCommands(cli || {}, {
-    name: commandName,
-  });
+  const commands: CommandTree = normalizeCommands(
+    cli || defaultCliImplementation,
+    { name: commandName }
+  );
 
   return {
     cli: commands,

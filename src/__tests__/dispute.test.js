@@ -85,7 +85,7 @@ describe('Dispute', () => {
     });
 
     it('prints the version if the global option is given', async () => {
-      const root = { packageJson, commandName, cli: {} };
+      const root = { packageJson, commandName };
       const version = () => createCli(root).execute(['--version']);
 
       await expect(version()).rejects.toMatchObject({

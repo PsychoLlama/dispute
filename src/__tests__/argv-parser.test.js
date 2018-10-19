@@ -5,7 +5,7 @@ import parseArgv from '../argv-parser';
 
 const parse = (config, argv, globalOptions = {}) =>
   parseArgv(
-    normalize(config),
+    normalize({ command() {}, ...config }),
     normalizeOptions({ options: globalOptions, commandPath: [] }),
     argv
   );
@@ -36,23 +36,20 @@ describe('option-parser', () => {
   });
 
   it('parses out simple options', () => {
-    const root = { command() {}, options };
-    const result = parse(root, ['-q']);
+    const result = parse({ options }, ['-q']);
 
     expect(result.options.quiet).toBe(true);
   });
 
   it('parses long options', () => {
-    const root = { command() {}, options };
-    const result = parse(root, ['--quiet']);
+    const result = parse({ options }, ['--quiet']);
 
     expect(result.options.quiet).toBe(true);
   });
 
   it('adds invalid options to the invalid bucket', () => {
-    const root = { command() {}, options };
     const invalid = ['-b', '-a', '--nope'];
-    const result = parse(root, [...invalid, '--quiet']);
+    const result = parse({ options }, [...invalid, '--quiet']);
 
     expect(result.options).toEqual({ quiet: true });
     expect(result.invalidOptions).toEqual(invalid);
@@ -60,7 +57,7 @@ describe('option-parser', () => {
 
   it('parses conjoined short flags', () => {
     const color = { usage: '-c', parseValue: parseValue.asBoolean };
-    const root = { command() {}, options: { ...options, color } };
+    const root = { options: { ...options, color } };
     const result = parse(root, ['-qc']);
 
     expect(result.options).toMatchObject({
@@ -70,36 +67,32 @@ describe('option-parser', () => {
   });
 
   it('consults the custom option parser for the argument', () => {
-    const root = { command() {}, options };
-    const result = parse(root, ['--inc=10']);
+    const result = parse({ options }, ['--inc=10']);
 
     expect(result.options.increment).toBe(10);
   });
 
   it('prefixes parse errors with the flag', () => {
-    const root = { command() {}, options };
-    const fail = () => parse(root, ['--inc=wat']);
+    const fail = () => parse({ options }, ['--inc=wat']);
 
     expect(fail).toThrow(/--inc/);
   });
 
   it('uses "true" for options without arguments', () => {
-    const root = { command() {}, options };
-    const result = parse(root, ['--quiet']);
+    const result = parse({ options }, ['--quiet']);
 
     expect(result.options.quiet).toBe(true);
   });
 
   it('removes consumed arguments from the arguments list', () => {
-    const root = { command() {}, options, args: '[anything]' };
+    const root = { options, args: '[anything]' };
     const result = parse(root, ['--inc', '50', 'arg']);
 
     expect(result.args).toEqual(['arg']);
   });
 
   it('throws if a required option argument is omitted', () => {
-    const root = { command() {}, options };
-    const fail = () => parse(root, ['--org']);
+    const fail = () => parse({ options }, ['--org']);
 
     expect(fail).toThrow(/org/);
   });
@@ -107,7 +100,7 @@ describe('option-parser', () => {
   it('provides a default input value if optional args are omitted', () => {
     const parseValue = jest.fn();
     const warp = { usage: '--warp [speed]', parseValue };
-    const root = { command() {}, options: { ...options, warp } };
+    const root = { options: { ...options, warp } };
     parse(root, ['--warp']);
 
     expect(parseValue).toHaveBeenCalledWith(
@@ -141,8 +134,7 @@ describe('option-parser', () => {
       color: { usage: '--color=<code>', parseValue: parseValue.asNumber },
     };
 
-    const command = { command() {}, options };
-    const result = parse(command, ['--color', '5'], {
+    const result = parse({ options }, ['--color', '5'], {
       color: { usage: '--color' },
     });
 

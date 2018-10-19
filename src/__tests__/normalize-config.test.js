@@ -45,5 +45,11 @@ describe('Config normalizer', () => {
       subCommands: {},
       options: {},
     });
+
+    expect(result.cli.command).toThrow(
+      expect.objectContaining({
+        exitCode: 1,
+      })
+    );
   });
 });
