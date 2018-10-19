@@ -1,6 +1,6 @@
 // @flow
+import { sortAlphabetically, padStringMatchingLongest } from './utils';
 import type { CommandTree } from '../normalize-commands';
-import { sortAlphabetically } from './utils';
 
 type CommandOptions = $PropertyType<CommandTree, 'options'>;
 type CommandOption = $PropertyType<CommandOptions, 'index-key'>;
@@ -19,23 +19,41 @@ const sortOptionsAlphabetically = (option1, option2) => {
 const describeOptionArg = ({ required, name }) =>
   required ? `<${name}>` : `[${name}]`;
 
-// "-o, --option <arg>"
-export const describeOptionUsage = ({ usage }: CommandOption) => {
-  const short = usage.short ? `-${usage.short}` : '';
-  const long = usage.long ? `--${usage.long}` : '';
-  const delimiter = short && long ? ', ' : '';
-  const arg = usage.argument ? ' ' + describeOptionArg(usage.argument) : '';
+const formatShortFlag = ({ usage }: CommandOption) => {
+  const flag = usage.short ? `-${usage.short}` : '';
 
-  return `${short}${delimiter}${long}${arg}`;
+  return usage.short && usage.long ? `${flag}, ` : flag;
 };
 
-// -o, --option1
-//     --option2
-// -3, --option3
+const formatLongFlag = ({ usage }: CommandOption) => {
+  const flag = usage.long ? `--${usage.long}` : '';
+  const arg = usage.argument ? ' ' + describeOptionArg(usage.argument) : '';
+  return flag + arg;
+};
+
+// -o,    --option1
+//        --option2
+// -1337, --option3
 export const describeOptions = (options: CommandOptions) => {
-  return Object.keys(options)
+  const sortedOptions = Object.keys(options)
     .map(option => options[option])
-    .sort(sortOptionsAlphabetically)
-    .map(describeOptionUsage)
+    .sort(sortOptionsAlphabetically);
+
+  const shortFlags = sortedOptions.map(formatShortFlag);
+  const padShortFlag = padStringMatchingLongest(shortFlags);
+
+  const longFlags = sortedOptions.map(formatLongFlag);
+  const padLongFlag = padStringMatchingLongest(longFlags, {
+    extraWhitespace: 3,
+  });
+
+  return sortedOptions
+    .map((option, index) => {
+      const short = padShortFlag(shortFlags[index]);
+      const long = padLongFlag(longFlags[index]);
+      const description = option.description || '';
+
+      return short + long + description;
+    })
     .join('\n');
 };

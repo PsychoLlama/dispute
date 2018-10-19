@@ -18,7 +18,7 @@ export default function describeSubCommands(
       const command = commands[commandName];
       const description = command.description || '';
 
-      return `  ${padCommandName(command.name)}${description}`;
+      return `${padCommandName(command.name)}${description}`;
     })
     .join('\n');
 }
