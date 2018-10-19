@@ -1,10 +1,12 @@
 // @flow
 import indent from 'indent-string';
 
+import describeCommandUsage, { getCommandPath } from './command';
 import type { CommandTree } from '../normalize-commands';
 import describeSubCommands from './sub-commands';
-import describeCommandUsage from './command';
 import { describeOptions } from './options';
+
+const hasSubCommands = command => Object.keys(command.subCommands).length > 0;
 
 export default function generateHelpPage(command: CommandTree) {
   const summary = {
@@ -21,7 +23,14 @@ export default function generateHelpPage(command: CommandTree) {
     ? `\n\nCommands:\n${indent(summary.subCommands, 2)}`
     : '';
 
-  const helpOutput = commandUsage + optionsUsage + subcommandUsage;
+  const commandPath = getCommandPath(command).join(' ');
+  const moreHelp = `'${commandPath} COMMAND --help'`;
+  const subCommandHelp = hasSubCommands(command)
+    ? `\n\nRun ${moreHelp} for more information on a command.`
+    : '\n';
 
-  return `\n${indent(helpOutput, 2)}\n`;
+  const helpOutput =
+    commandUsage + optionsUsage + subcommandUsage + subCommandHelp;
+
+  return helpOutput;
 }

@@ -15,10 +15,17 @@ export const getCommandPath = (command: CommandTree) => {
 
 // "Usage: cmd run <arg1> [arg2]"
 export default function describeCommandUsage(command: CommandTree) {
+  const description = command.description ? `\n\n${command.description}` : '';
+  const commandPath = getCommandPath(command).join(' ');
+
+  // Not a command, just a container for sub-commands.
+  if (!command.command) {
+    return `Usage: ${commandPath} COMMAND${description}`;
+  }
+
   const args = command.args.map(arg => arg.raw).join(' ');
   const spacing = command.args.length ? ' ' : '';
-  const commandPath = getCommandPath(command).join(' ');
-  const description = command.description ? `\n\n${command.description}` : '';
+  const usage = commandPath + spacing + args + description;
 
-  return `Usage: ${commandPath}${spacing}${args}${description}`;
+  return `Usage: ${usage}`;
 }

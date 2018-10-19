@@ -1,3 +1,4 @@
+#!/usr/bin/env node
 // @flow
 import { createCli } from '../../dispute';
 import pkg from '../../../package';

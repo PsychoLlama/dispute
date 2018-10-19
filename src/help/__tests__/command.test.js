@@ -42,4 +42,15 @@ describe('describeCommandUsage(...)', () => {
 
     expect(result).toContain(run.description);
   });
+
+  it('shows a required argument if there are only sub-commands', () => {
+    const add = { command() {} };
+    const description = 'Manage upstream URLs';
+    const remote = { subCommands: { add }, description };
+    const config = createConfig(remote);
+    const result = describeCommandUsage(config.cli);
+
+    expect(result).toContain('COMMAND');
+    expect(result).toContain(description);
+  });
 });
