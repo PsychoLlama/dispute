@@ -8,6 +8,7 @@ const diff = async (options: {}, rev: string) => {
 };
 
 export default {
+  description: 'Show changes between commits, commit and working tree, etc',
   args: '[revision]',
   command: diff,
 };

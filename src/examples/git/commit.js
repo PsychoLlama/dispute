@@ -8,6 +8,7 @@ const commit = ({ message }: Options) => {
 };
 
 export default {
+  description: 'Record changes to the repository',
   command: commit,
   options: {
     message: {

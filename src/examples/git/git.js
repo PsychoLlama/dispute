@@ -10,6 +10,7 @@ const cli = createCli({
   commandName: 'git',
   packageJson: pkg,
   cli: {
+    description: 'Distributed version control system',
     subCommands: {
       commit,
       diff,
