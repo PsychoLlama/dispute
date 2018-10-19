@@ -26,8 +26,8 @@ describe('describeSubCommands(...)', () => {
     const config = createConfig({ subCommands: { add, remove } });
     const result = describeSubCommands(config);
 
-    expect(result).toContain('- remove');
-    expect(result).toContain('- add');
+    expect(result).toContain('  remove');
+    expect(result).toContain('  add');
   });
 
   it('sorts subcommands alphabetically', () => {
