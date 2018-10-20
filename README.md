@@ -1,8 +1,13 @@
-# Dispute
-A tool for building command line interfaces.
+<div align="center">
+  <img alt="dispute logo" src="https://cdn.jsdelivr.net/gh/PsychoLlama/dispute@744662288c29426397a73396c441a158f09150d4/static/logo.png" width="150" align="center" />
+  <h1>Dispute</h1>
+  <p>A tool for building command line interfaces.</p>
 
-[![Travis (.org) master status](https://img.shields.io/travis/PsychoLlama/dispute/master.svg?style=popout-square)](https://travis-ci.org/PsychoLlama/dispute)
-[![npm](https://img.shields.io/npm/v/dispute.svg?style=popout-square)](https://www.npmjs.com/package/dispute)
+  <div>
+    <a href="https://travis-ci.org/PsychoLlama/dispute"><img alt="Travis CI master build status" src="https://img.shields.io/travis/PsychoLlama/dispute/master.svg?style=popout-square" /></a>
+    <a href="https://www.npmjs.com/package/dispute"><img alt="npm package version" src="https://img.shields.io/npm/v/dispute.svg?style=popout-square" /></a>
+  </div>
+</div>
 
 ## Purpose
 Dispute is an alternative to [commander](https://www.npmjs.com/package/commander) and [yargs](https://www.npmjs.com/package/yargs) with a focus on testability and command composition.
