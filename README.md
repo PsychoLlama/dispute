@@ -62,10 +62,10 @@ folder](https://github.com/PsychoLlama/dispute/tree/master/src/examples).
 
 ## API
 ### Table of Contents
-- `createCli(...)`
-- `.execute(...)`
-- `.createTestInterface(...)`
-- `ExitCode(...)`
+- [`createCli(...)`](#createcli)
+- [`.execute(...)`](#createcliexecute)
+- [`.createTestInterface(...)`](#createclicreatetestinterface)
+- [`ExitCode(...)`](#exitcode)
 
 ### `createCli(...)`
 Validates the given config and returns a few different ways to interact with
