@@ -24,7 +24,7 @@ export const createCli = (sparseConfig: Config) => {
       throw new FatalError(`"$ ${commandPath}" isn't a command.\n${help}`);
     }
 
-    const output = await command.command(options, ...args);
+    const output = await command.command.call(undefined, options, ...args);
 
     return {
       ...result,

@@ -93,6 +93,19 @@ describe('Dispute', () => {
         exitCode: 0,
       });
     });
+
+    it('runs the command with no `this` context', async () => {
+      const commands = {
+        command: jest.fn(function() {
+          expect(this).toBeUndefined();
+        }),
+      };
+
+      const root = { packageJson, commandName, cli: commands };
+      await createCli(root).execute([]);
+
+      expect(commands.command).toHaveBeenCalled();
+    });
   });
 
   describe('createTestInterface', () => {
