@@ -401,6 +401,3 @@ package has to be 2 syllables.
 - [@freighter/cli](https://www.npmjs.com/package/@freighter/cli)
 
 If you're using dispute in a public project, submit a pull request!
-
-## Roadmap
-- Automatically generate SDKs using the command tree.
