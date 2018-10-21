@@ -3,7 +3,6 @@ const TRUTHY_VALUES = new Set(['true', 'yes', 'on']);
 const FALSEY_VALUES = new Set(['false', 'no', 'off']);
 
 export type OptionArgument = {
-  // TODO: make this return a special error class.
   createParseError: (errorMessage: string) => Error,
   input: string,
   flag: string,
