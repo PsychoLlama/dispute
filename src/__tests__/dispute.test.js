@@ -141,4 +141,16 @@ describe('Dispute', () => {
       expect(remote.command).toHaveBeenCalledWith({ verbose: true });
     });
   });
+
+  describe('createApi', () => {
+    it('returns an API interface', () => {
+      const add = { command() {} };
+      const subCommands = { add };
+      const cli = { command() {}, subCommands };
+      const api = createCli({ commandName, packageJson, cli }).createApi();
+
+      expect(api).toEqual(expect.any(Function));
+      expect(api.add).toEqual(expect.any(Function));
+    });
+  });
 });

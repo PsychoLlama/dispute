@@ -5,6 +5,7 @@ import { getCommandPath } from './help/command';
 import * as parseValue from './parse-value';
 import parseArgv from './argv-resolver';
 import generateHelpPage from './help';
+import createApi from './create-api';
 
 export const createCli = (sparseConfig: Config) => {
   const config = normalizeConfig(sparseConfig);
@@ -34,6 +35,7 @@ export const createCli = (sparseConfig: Config) => {
 
   return {
     execute: handleKnownErrors({}, execute),
+    createApi: () => createApi(config.cli),
     createTestInterface: () => {
       return async (...args: string[]) => {
         const { output } = await execute(args);
