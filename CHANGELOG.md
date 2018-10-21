@@ -1,9 +1,10 @@
 # Changelog
 `dispute` follows [this changelog style](https://keepachangelog.com/) and adheres to [semver](https://semver.org/).
 
-## Unreleased
+## `0.3.0`
 ### Added
 - Support for command & option descriptions.
+- Proper documentation (in readme).
 
 ### Changed
 - Refined help output looks closer to something docker would generate (I really like their help format).
