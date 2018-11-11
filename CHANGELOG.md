@@ -1,6 +1,13 @@
 # Changelog
 `dispute` follows [this changelog style](https://keepachangelog.com/) and adheres to [semver](https://semver.org/).
 
+## Unreleased
+### Added
+- Support for programmatic API generation using `.createApi()` (experimental feature).
+
+### Changed
+- Dispute will throw an error if you try to define the same flag twice in the same command.
+
 ## `0.3.0`
 ### Added
 - Support for command & option descriptions.
