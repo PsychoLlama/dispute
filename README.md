@@ -65,6 +65,7 @@ folder](https://github.com/PsychoLlama/dispute/tree/master/src/examples).
 - [`createCli(...)`](#createcli)
 - [`.execute(...)`](#createcliexecute)
 - [`.createTestInterface(...)`](#createclicreatetestinterface)
+- [`.createApi(...)`](#createclicreateapi)
 - [`ExitCode(...)`](#exitcode)
 
 ### `createCli(...)`
@@ -357,6 +358,36 @@ describe('docker run', () => {
   })
 })
 ```
+
+### `createCli(...).createApi()`
+> **Note:** this feature is experimental.
+
+`createApi()` returns a programmatic interface for your CLI, mirroring
+subcommands and options into a typical JS API. This has a few advantages:
+- Zero-cost to ship a JavaScript API for your command line interface
+- Reuses your terminal API contract, so...
+  - Your users already know the API
+  - There's almost no added API surface
+
+The generated wrapper does some pre-processing to map normal JS practices into
+what your command expects. One of the most notable differences is that the
+options object comes last:
+
+```js
+const yarn = cli.createApi();
+
+yarn.global.add('package-name', {
+  cacheFolder: '/tmp/yarn-cache',
+  dev: true,
+})
+```
+
+It also transforms your kebab-case flag names (like `--cache-folder`) into
+camelCase option names.
+
+#### Backwards Compatibility
+The return value is whatever your command returns, so if you change it, be
+careful not to break backwards compatibility.
 
 ### `ExitCode(...)`
 One of the ways a command communicates failure is through the exit code. If
