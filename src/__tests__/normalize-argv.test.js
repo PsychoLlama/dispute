@@ -33,34 +33,23 @@ describe('normalizeArgv(...)', () => {
     expect(result).toEqual(['--port', '8080']);
   });
 
-  it('splits short conjoined pairs', () => {
-    const result = normalizeArgv(['-v=./:/etc/var/app']);
-
-    expect(result).toEqual(['-v', './:/etc/var/app']);
-  });
-
-  it('ignores "=" signs in the argument', () => {
+  it('strips "=" signs in flag argument assigment', () => {
     const result = normalizeArgv(['--chars=+,-,=']);
 
     expect(result).toEqual(['--chars', '+,-,=']);
   });
 
+  // Short flags with "=" signs aren't supported.
   it('splits conjoined pairs in short flag groups', () => {
-    const result = normalizeArgv(['-vp=8080']);
+    const result = normalizeArgv(['-vl=1']);
 
-    expect(result).toEqual(['-v', '-p', '8080']);
+    expect(result).toEqual(['-v', '-l', '-=', '-1']);
   });
 
   it('survives if weird things happen', () => {
-    const argv = ['-zxv=./Weird Dir/=/--content', 'stuff'];
+    const argv = ['--file=./Weird Dir/=/--content', 'stuff'];
     const result = normalizeArgv(argv);
 
-    expect(result).toEqual([
-      '-z',
-      '-x',
-      '-v',
-      './Weird Dir/=/--content',
-      'stuff',
-    ]);
+    expect(result).toEqual(['--file', './Weird Dir/=/--content', 'stuff']);
   });
 });

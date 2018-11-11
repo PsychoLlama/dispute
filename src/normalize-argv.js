@@ -3,7 +3,7 @@ export const looksLikeFlag = (argument: string) => /^-/.test(argument);
 export const isShortFlag = (argument: string) => /^-[^-]/.test(argument);
 
 const isNumericFlag = (argument: string) => /^-\d/.test(argument);
-const isConjoinedWithValue = (argument: string) => /^--?\w+?=/.test(argument);
+const isConjoinedWithValue = (argument: string) => /^--\w+?=/.test(argument);
 
 // Massages the argv until it's ready for consumption.
 export default function normalizeArgv(argv: string[]): string[] {
