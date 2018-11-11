@@ -5,10 +5,15 @@ import type { CommandTree } from './normalize-commands';
 const indexOptionsByName = options => {
   const index = new Map();
 
+  const camelCase = flag =>
+    flag.replace(/-([a-z])/g, (match, letter) => {
+      return letter.toUpperCase();
+    });
+
   Object.keys(options).forEach(optionName => {
     const { long, short } = options[optionName].usage;
 
-    if (long) index.set(long, optionName);
+    if (long) index.set(camelCase(long), optionName);
     if (short) index.set(short, optionName);
   });
 

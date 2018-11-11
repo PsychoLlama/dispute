@@ -50,12 +50,12 @@ describe('createApi(...)', () => {
   });
 
   it('passes the options object', () => {
-    const secretName = { usage: '--public-name' };
-    const shortFlag = { usage: '-m' };
+    const secretName = { usage: '--long-public-name' };
+    const shortFlag = { usage: '-1337' };
     const options = { secretName, shortFlag };
     const config = { command: jest.fn(), options };
     const api = toApi(config);
-    const givenOptions = { 'public-name': true, m: 'enabled' };
+    const givenOptions = { longPublicName: true, [1337]: 'enabled' };
 
     api('arg', givenOptions);
 
