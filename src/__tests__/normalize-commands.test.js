@@ -187,4 +187,24 @@ describe('Command normalizer', () => {
 
     expect(result.options.add.description).toBe(description);
   });
+
+  it('throws if two long flags share the same name', () => {
+    const append = { usage: '--append' };
+    const add = { usage: '--append' };
+    const options = { add, append };
+    const config = { command() {}, options };
+    const fail = () => normalize(config);
+
+    expect(fail).toThrow(/--append/);
+  });
+
+  it('throws if two short flags share the same name', () => {
+    const add = { usage: '-a' };
+    const amend = { usage: '-a' };
+    const options = { add, amend };
+    const config = { command() {}, options };
+    const fail = () => normalize(config);
+
+    expect(fail).toThrow(/-a/);
+  });
 });

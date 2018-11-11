@@ -124,6 +124,8 @@ export default function normalizeCommands(
     options,
   });
 
+  enforceOptionUniqueness({ options: normalizedCommand.options, commandPath });
+
   return normalizedCommand;
 }
 
@@ -199,4 +201,35 @@ export const normalizeOptions = ({
 
     return commandOptions;
   }, {});
+};
+
+const enforceOptionUniqueness = ({
+  commandPath,
+  options,
+}: {
+  options: CommandOptionsStrict,
+  commandPath: string[],
+}) => {
+  const flags = new Map();
+
+  const assertUniqueFlag = (optionName, flagName, prefix) => {
+    if (!flags.has(flagName)) return;
+    const otherOptionName: string = (flags.get(flagName): any);
+
+    throw new Error(
+      `The "${prefix + flagName}" flag is redefined by multiple options\n` +
+        `("${optionName}" and "${otherOptionName}")` +
+        generateFieldTrace(commandPath, 'options')
+    );
+  };
+
+  Object.keys(options).forEach(optionName => {
+    const option = options[optionName];
+    const { short, long } = option.usage;
+
+    if (short) assertUniqueFlag(optionName, short, '-');
+    if (long) assertUniqueFlag(optionName, long, '--');
+
+    flags.set(short, optionName).set(long, optionName);
+  });
 };
