@@ -8,6 +8,9 @@
 ### Changed
 - Dispute will throw an error if you try to define the same flag twice in the same command.
 
+### Removed
+- Dropped support for `=` in shorthand flags (e.g. `-qvp=8080` instead of `-qvp 8080`). This only affects short flags.
+
 ## `0.3.0`
 ### Added
 - Support for command & option descriptions.
