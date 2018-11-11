@@ -1,7 +1,7 @@
 # Changelog
 `dispute` follows [this changelog style](https://keepachangelog.com/) and adheres to [semver](https://semver.org/).
 
-## Unreleased
+## `0.4.0`
 ### Added
 - Support for programmatic API generation using `.createApi()` (experimental feature).
 
