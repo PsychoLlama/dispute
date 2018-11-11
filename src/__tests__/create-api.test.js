@@ -50,12 +50,28 @@ describe('createApi(...)', () => {
   });
 
   it('passes the options object', () => {
+    const secretName = { usage: '--public-name' };
+    const shortFlag = { usage: '-m' };
+    const options = { secretName, shortFlag };
+    const config = { command: jest.fn(), options };
+    const api = toApi(config);
+    const givenOptions = { 'public-name': true, m: 'enabled' };
+
+    api('arg', givenOptions);
+
+    expect(config.command).toHaveBeenCalledWith(
+      { secretName: true, shortFlag: 'enabled' },
+      'arg'
+    );
+  });
+
+  it('eats unknown options', () => {
     const config = { command: jest.fn() };
     const api = toApi(config);
-    const options = { quiet: true };
+    const options = { undefinedOption: true };
 
     api('arg', options);
 
-    expect(config.command).toHaveBeenCalledWith(options, 'arg');
+    expect(config.command).toHaveBeenCalledWith({}, 'arg');
   });
 });
