@@ -57,9 +57,9 @@
     "eslint-plugin-flowtype": "^3.10.3",
     "eslint-plugin-prettier": "^3.1.0",
     "flow-bin": "^0.81.0",
-    "husky": "^1.0.1",
+    "husky": "^2.4.1",
     "jest": "^24.8.0",
-    "lint-staged": "^7.3.0",
+    "lint-staged": "^8.2.1",
     "prettier": "^1.14.3"
   },
   "dependencies": {
