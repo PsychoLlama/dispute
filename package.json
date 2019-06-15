@@ -49,7 +49,7 @@
     "babel-preset-flow": "^6.23.0",
     "eslint": "^5.6.0",
     "eslint-config-prettier": "^5.0.0",
-    "eslint-plugin-flowtype": "^2.50.3",
+    "eslint-plugin-flowtype": "^3.10.3",
     "eslint-plugin-prettier": "^3.1.0",
     "flow-bin": "^0.81.0",
     "husky": "^1.0.1",
