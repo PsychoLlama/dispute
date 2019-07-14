@@ -16,15 +16,14 @@ export interface CommandOption {
   description?: string;
 }
 
-// I really wish Flow could infer the return value.
 type ParseValue = <T>(option: parseOption.OptionArgument) => T;
 
 interface Subcommands<Subcommand> {
   [commandName: string]: Subcommand;
 }
 
-export interface CommandOptions<ParseValue extends Record<string, any>> {
-  [optionName: string]: CommandOption & ParseValue;
+export interface CommandOptions<Override extends Record<string, any>> {
+  [optionName: string]: CommandOption & Override;
 }
 
 // Loose type. Allows undefined fields.
@@ -42,13 +41,17 @@ export interface CommandConfig {
   args?: string;
 }
 
-// Strict type. All fields must have defaults.
-type CommandOptionsStrict = CommandOptions<{
+export interface CommandOptionStrict {
   description: string | null;
   parseValue: ParseValue;
   optionName: string;
   usage: Usage;
-}>;
+}
+
+// Strict type. All fields must have defaults.
+export interface CommandOptionsStrict {
+  [optionName: string]: CommandOptionStrict;
+}
 
 export interface CommandTree {
   subCommands: Subcommands<CommandTree>;
@@ -155,6 +158,7 @@ const normalizeSubcommands = ({
   parent: CommandTree;
 }): Subcommands<CommandTree> => {
   const commandNames = Object.keys(commands);
+  const subCommands: Subcommands<CommandTree> = {};
 
   return commandNames.reduce((subCommands, commandName) => {
     const command = commands[commandName];
@@ -166,7 +170,7 @@ const normalizeSubcommands = ({
     });
 
     return subCommands;
-  }, {});
+  }, subCommands);
 };
 
 // Add defaults to every option.
@@ -178,9 +182,11 @@ export const normalizeOptions = ({
   commandPath: string[];
 }): CommandOptionsStrict => {
   const optionNames = Object.keys(options);
+  const commandOptions: CommandOptionsStrict = {};
+
   return optionNames.reduce((commandOptions, optionName) => {
     const {
-      parseValue = parseOption.asString,
+      parseValue = parseOption.asString as ParseValue,
       description = null,
       usage,
     } = options[optionName];
@@ -199,7 +205,7 @@ export const normalizeOptions = ({
     };
 
     return commandOptions;
-  }, {});
+  }, commandOptions);
 };
 
 const enforceOptionUniqueness = ({
