@@ -1,20 +1,19 @@
 overrides:
-  - files: '**/__tests__/*.test.js'
+  - files: '**/__tests__/*.test.ts'
     env:
       jest: true
 
 extends:
   - eslint:recommended
-  - plugin:flowtype/recommended
+  - plugin:@typescript-eslint/recommended
   - plugin:prettier/recommended
+  - prettier/@typescript-eslint
 
-parser: babel-eslint
+parser: '@typescript-eslint/parser'
+
 env:
   node: true
   es6: true
 
 parserOptions:
   sourceType: module
-
-rules:
-  flowtype/generic-spacing: off
