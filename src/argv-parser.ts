@@ -83,8 +83,8 @@ const extractPossibleArgument = (argvStack: string[]): undefined | string => {
 };
 
 interface ParsedOutput {
-  globalOptions: { [optionName: string]: mixed };
-  options: { [optionName: string]: mixed };
+  globalOptions: { [optionName: string]: Options['name'] };
+  options: { [optionName: string]: Options['name'] };
   invalidOptions: string[];
   args: string[];
 }
@@ -146,7 +146,8 @@ export default function parseArgv(
 
     // Decide if this is a global or local option. Prefer local.
     const optionsMap = commandOption ? parsed.options : parsed.globalOptions;
-    optionsMap[option.optionName] = optionValue;
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    (optionsMap as any)[option.optionName] = optionValue;
 
     // Don't mistake the option's argument for a command argument.
     if (optionConsumedArgument) stack.shift();

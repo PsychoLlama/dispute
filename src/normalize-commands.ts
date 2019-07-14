@@ -1,4 +1,4 @@
-// @flow
+/* eslint-disable @typescript-eslint/no-explicit-any */
 import assert from 'minimalistic-assert';
 
 import parseCommandUsage, { Argument } from './parser/command-usage-parser';
@@ -9,9 +9,9 @@ import * as parseOption from './parse-value';
 // I've tried to get clever with `$ObjMap<$Call<...>>` and
 // wasted way too much time. If the user wants typed options,
 // they'll need to define it themselves.
-type Command = <T, A>(options: Record<string, A>, ...args: string[]) => T;
+type Command = <A>(options: Record<string, A>, ...args: string[]) => any;
 
-interface CommandOption {
+export interface CommandOption {
   parseValue?: ParseValue;
   description?: string;
 }
@@ -23,7 +23,7 @@ interface Subcommands<Subcommand> {
   [commandName: string]: Subcommand;
 }
 
-interface CommandOptions<ParseValue extends Record<string, any>> {
+export interface CommandOptions<ParseValue extends Record<string, any>> {
   [optionName: string]: CommandOption & ParseValue;
 }
 

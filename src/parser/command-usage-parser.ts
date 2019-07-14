@@ -15,8 +15,6 @@ export default function parseCommandUsage(usage: string): Argument[] {
   const { isType } = tokenizer;
   const args: Argument[] = [];
 
-  const readAnyToken = (): any => tokenizer.consumeNextToken();
-
   const assertValidArgumentOrdering = (arg: ArgToken) => {
     const precededByOptional = args.find(arg => !arg.required);
     if (!arg.required || !precededByOptional) return;
@@ -24,7 +22,7 @@ export default function parseCommandUsage(usage: string): Argument[] {
   };
 
   const readArgument = (): Argument => {
-    const arg: ArgToken = readAnyToken();
+    const arg = tokenizer.consumeNextToken() as ArgToken;
     const { name, variadic, required, type, raw } = arg;
     assertValidArgumentOrdering(arg);
 
