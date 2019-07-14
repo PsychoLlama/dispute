@@ -50,8 +50,8 @@ export const makeParseErrorFactory = ({
   flag,
   prefix = 'Invalid value',
 }: {
-  flag: string,
-  prefix?: string,
+  flag: string;
+  prefix?: string;
 }) => (msg: string) => {
   const trace = `at ${chalk.blue(flag)}`;
   const errorPrefix = `${chalk.red(prefix)} ${trace}`;
@@ -60,7 +60,7 @@ export const makeParseErrorFactory = ({
 };
 
 // Check the error for a secret flag.
-export const isKnownError = (error: mixed) => {
+export const isKnownError = <T>(error: T) => {
   if (!(error instanceof Object)) return false;
 
   return Boolean(error[KNOWN_ERROR_KEY]);
@@ -77,13 +77,13 @@ const createHandledRejection = error => {
 };
 
 type ErrorHandlerOptions = {
-  log?: (msg: string) => void,
+  log?: (msg: string) => void;
 };
 
-export const handleKnownErrors = <ArgType>(
+export const handleKnownErrors = <ArgType, T>(
   options: ErrorHandlerOptions,
-  fn: (args: ArgType) => *
-) => async (args: ArgType): * => {
+  fn: (args: ArgType) => T
+) => async (args: ArgType): Promise<T> => {
   /* istanbul ignore next */
   const { log = DEFAULT_ERROR_LOG } = options;
 

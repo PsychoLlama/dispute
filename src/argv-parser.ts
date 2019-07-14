@@ -57,18 +57,18 @@ const parseOption = ({ flag, option, argument }) => {
   return { optionValue, optionConsumedArgument: true };
 };
 
-const extractPossibleArgument = (argvStack: string[]): ?string => {
-  const argument: ?string = argvStack[0];
+const extractPossibleArgument = (argvStack: string[]): void | string => {
+  const argument: void | string = argvStack[0];
   if (!argument || looksLikeFlag(argument)) return undefined;
 
   return argument;
 };
 
 type ParsedOutput = {
-  globalOptions: { [optionName: string]: mixed },
-  options: { [optionName: string]: mixed },
-  invalidOptions: string[],
-  args: string[],
+  globalOptions: { [optionName: string]: mixed };
+  options: { [optionName: string]: mixed };
+  invalidOptions: string[];
+  args: string[];
 };
 
 /**

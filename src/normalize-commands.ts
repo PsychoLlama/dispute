@@ -9,55 +9,55 @@ import * as parseOption from './parse-value';
 // I've tried to get clever with `$ObjMap<$Call<...>>` and
 // wasted way too much time. If the user wants typed options,
 // they'll need to define it themselves.
-type Command = (options: Object, ...args: string[]) => mixed;
+type Command = <T>(options: Object, ...args: string[]) => T;
 
 type CommandOption = {
-  parseValue?: ParseValue,
-  description?: string,
+  parseValue?: ParseValue;
+  description?: string;
 };
 
 // I really wish Flow could infer the return value.
-type ParseValue = parseOption.OptionArgument => mixed;
+type ParseValue = <T>(option: parseOption.OptionArgument) => T;
 
 type Subcommands<Subcommand> = {
-  [commandName: string]: Subcommand,
+  [commandName: string]: Subcommand;
 };
 
 type CommandOptions<ParseValue extends Object> = {
-  [optionName: string]: CommandOption & ParseValue,
+  [optionName: string]: CommandOption & ParseValue;
 };
 
 // Loose type. Allows undefined fields.
 type CommandOptionsLoose = CommandOptions<{
-  parseValue?: ParseValue,
-  description?: string,
-  usage: string,
+  parseValue?: ParseValue;
+  description?: string;
+  usage: string;
 }>;
 
 export type CommandConfig = {
-  subCommands?: Subcommands<CommandConfig>,
-  options?: CommandOptionsLoose,
-  description?: string,
-  command?: Command,
-  args?: string,
+  subCommands?: Subcommands<CommandConfig>;
+  options?: CommandOptionsLoose;
+  description?: string;
+  command?: Command;
+  args?: string;
 };
 
 // Strict type. All fields must have defaults.
 type CommandOptionsStrict = CommandOptions<{
-  description: string | null,
-  parseValue: ParseValue,
-  optionName: string,
-  usage: Usage,
+  description: string | null;
+  parseValue: ParseValue;
+  optionName: string;
+  usage: Usage;
 }>;
 
 export type CommandTree = {
-  subCommands: Subcommands<CommandTree>,
-  options: CommandOptionsStrict,
-  description: string | null,
-  parent: CommandTree | null,
-  command?: Command,
-  args: Argument[],
-  name: string,
+  subCommands: Subcommands<CommandTree>;
+  options: CommandOptionsStrict;
+  description: string | null;
+  parent: CommandTree | null;
+  command?: Command;
+  args: Argument[];
+  name: string;
 };
 
 /**
@@ -66,9 +66,9 @@ export type CommandTree = {
 export default function normalizeCommands(
   config: CommandConfig,
   metadata: {
-    parent?: CommandTree | null,
-    commandPath?: string[],
-    name?: string,
+    parent?: CommandTree | null;
+    commandPath?: string[];
+    name?: string;
   } = {}
 ): CommandTree {
   const { parent = null, commandPath = [], name = 'unit-test' } = metadata;
@@ -149,9 +149,9 @@ const normalizeSubcommands = ({
   commands,
   parent,
 }: {
-  commands: Subcommands<CommandConfig>,
-  commandPath: string[],
-  parent: CommandTree,
+  commands: Subcommands<CommandConfig>;
+  commandPath: string[];
+  parent: CommandTree;
 }): Subcommands<CommandTree> => {
   const commandNames = Object.keys(commands);
 
@@ -173,8 +173,8 @@ export const normalizeOptions = ({
   options,
   commandPath,
 }: {
-  options: CommandOptionsLoose,
-  commandPath: string[],
+  options: CommandOptionsLoose;
+  commandPath: string[];
 }): CommandOptionsStrict => {
   const optionNames = Object.keys(options);
   return optionNames.reduce((commandOptions, optionName) => {
@@ -205,12 +205,16 @@ const enforceOptionUniqueness = ({
   commandPath,
   options,
 }: {
-  options: CommandOptionsStrict,
-  commandPath: string[],
+  options: CommandOptionsStrict;
+  commandPath: string[];
 }) => {
   const flags = new Map();
 
-  const assertUniqueFlag = (optionName: string, flagName: string, prefix: string) => {
+  const assertUniqueFlag = (
+    optionName: string,
+    flagName: string,
+    prefix: string
+  ) => {
     if (!flags.has(flagName)) return;
     const otherOptionName = flags.get(flagName);
 
