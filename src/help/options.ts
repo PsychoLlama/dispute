@@ -19,8 +19,13 @@ const sortOptionsAlphabetically = (
   return sortAlphabetically(option1Name, option2Name);
 };
 
-const describeOptionArg = ({ required, name }) =>
-  required ? `<${name}>` : `[${name}]`;
+const describeOptionArg = ({
+  required,
+  name,
+}: {
+  name: string;
+  required: boolean;
+}) => (required ? `<${name}>` : `[${name}]`);
 
 const formatShortFlag = ({ usage }: CommandOption) => {
   const flag = usage.short ? `-${usage.short}` : '';

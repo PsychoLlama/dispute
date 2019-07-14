@@ -4,7 +4,6 @@ import chalk from 'chalk';
 // eslint-disable-next-line no-console
 const DEFAULT_ERROR_LOG = console.error;
 const ENABLE_ERROR_LOGGING = Symbol('Dispute: ENABLE_ERROR_LOGGING');
-const KNOWN_ERROR_KEY = Symbol('Dispute: KNOWN_ERROR_KEY');
 
 const noop = () => {};
 
@@ -16,11 +15,6 @@ export class ExitCode extends Error {
 
     this.exitCode = 0;
     Object.defineProperties(this, {
-      [KNOWN_ERROR_KEY]: {
-        enumerable: false,
-        writable: false,
-        value: true,
-      },
       exitCode: {
         enumerable: true,
         writable: false,
@@ -64,13 +58,13 @@ export const makeParseErrorFactory = ({
 export const isKnownError = <T>(error: T) => {
   if (!(error instanceof Object)) return false;
 
-  return Boolean(error[KNOWN_ERROR_KEY]);
+  return error instanceof ExitCode;
 };
 
 // By the time we make it here, the error has
 // been reported and the process is terminating.
 // Return a rejection, but keep it silent.
-const createHandledRejection = error => {
+const createHandledRejection = <T extends Error>(error: T) => {
   const rejection = Promise.reject(error);
   rejection.catch(noop);
 
