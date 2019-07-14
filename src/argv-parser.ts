@@ -1,11 +1,18 @@
 // @flow
 import normalizeArgv, { looksLikeFlag, isShortFlag } from './normalize-argv';
-import { CommandTree } from './normalize-commands';
 import { makeParseErrorFactory } from './error-utils';
+import { CommandTree } from './normalize-commands';
 
 type Options = CommandTree['options'];
 
-const indexOptions = (options: Options) => {
+interface OptionIndex<OptionName extends string> {
+  shortFlags: Map<string, Options[OptionName]>;
+  longFlags: Map<string, Options[OptionName]>;
+}
+
+const indexOptions = <OptionName extends string>(
+  options: Options
+): OptionIndex<OptionName> => {
   const shortFlags = new Map();
   const longFlags = new Map();
 
@@ -21,14 +28,25 @@ const indexOptions = (options: Options) => {
 
 // Look up the given flag in the flag index.
 // Which index depends on the type.
-const resolveOption = (index, arg) => {
+const resolveOption = <OptionName extends string>(
+  index: OptionIndex<OptionName>,
+  arg: string
+): Options[OptionName] => {
   const flagName = arg.replace(/^--?/, '');
   const flagIndex = isShortFlag(arg) ? index.shortFlags : index.longFlags;
 
-  return flagIndex.get(flagName);
+  return flagIndex.get(flagName) as Options[OptionName];
 };
 
-const parseOption = ({ flag, option, argument }) => {
+const parseOption = <OptionName extends string>({
+  flag,
+  option,
+  argument,
+}: {
+  flag: string;
+  option: Options[OptionName];
+  argument: undefined | string;
+}) => {
   // If it doesn't accept an argument, the option must be boolean.
   if (!option.usage.argument) {
     return {
@@ -57,7 +75,7 @@ const parseOption = ({ flag, option, argument }) => {
   return { optionValue, optionConsumedArgument: true };
 };
 
-const extractPossibleArgument = (argvStack: string[]): void | string => {
+const extractPossibleArgument = (argvStack: string[]): undefined | string => {
   const argument: void | string = argvStack[0];
   if (!argument || looksLikeFlag(argument)) return undefined;
 
