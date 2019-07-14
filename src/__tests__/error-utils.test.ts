@@ -80,11 +80,12 @@ describe('handleKnownErrors(...)', () => {
 
   // Don't try this at home.
   beforeAll(() => {
-    jest.spyOn(process, 'exit').mockReturnValue();
+    jest.spyOn(process, 'exit');
+    (process.exit as any).mockImplementation(() => {});
   });
 
   afterAll(() => {
-    process.exit.mockRestore();
+    (process.exit as any).mockRestore();
   });
 
   beforeEach(() => {

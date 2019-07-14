@@ -2,7 +2,7 @@
 import normalizeConfig from '../normalize-commands';
 import resolveCommand from '../command-resolver';
 
-const parse = (config, argv) =>
+const parse = (config: object, argv: any[]) =>
   resolveCommand(normalizeConfig({ command() {}, ...config }), argv);
 
 describe('argument-parser', () => {

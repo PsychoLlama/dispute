@@ -75,15 +75,25 @@ interface ErrorHandlerOptions {
   log?: (msg: string) => void;
 }
 
-export const handleKnownErrors = <ArgType, T>(
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ReturnType<Fn extends Function> = Fn extends (...args: any[]) => infer T
+  ? T
+  : never;
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+type ArgumentType<Fn extends Function> = Fn extends (...args: infer T) => any
+  ? T
+  : never;
+
+export const handleKnownErrors = <Fn extends Function>(
   options: ErrorHandlerOptions,
-  fn: (args: ArgType) => T
-) => async (args: ArgType): Promise<T> => {
+  fn: Fn
+) => async (...args: ArgumentType<Fn>): Promise<ReturnType<Fn>> => {
   /* istanbul ignore next */
   const { log = DEFAULT_ERROR_LOG } = options;
 
   try {
-    return await fn(args);
+    return await fn(...args);
   } catch (error) {
     if (!isKnownError(error)) {
       log(error);

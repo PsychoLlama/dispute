@@ -2,7 +2,7 @@
 import normalizeCommands from '../normalize-commands';
 import createApi from '../create-api';
 
-const toApi = config => {
+const toApi = (config: object) => {
   const commands = normalizeCommands(config);
   return createApi(commands);
 };

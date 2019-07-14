@@ -18,7 +18,9 @@ describe('Dispute', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (handleKnownErrors as any).mockImplementation((options, fn) => fn);
+    (handleKnownErrors as any).mockImplementation(
+      (_options: object, fn: Function) => fn
+    );
   });
 
   it('creates a CLI', () => {
@@ -79,7 +81,7 @@ describe('Dispute', () => {
       const remote = { command: jest.fn(), args: '<arg>' };
       const commands = { subCommands: { remote } };
       const config = { packageJson, commandName, cli: commands };
-      await createCli(config).execute();
+      await createCli(config).execute(undefined);
 
       expect(remote.command).toHaveBeenCalledWith({}, 'arg');
     });
@@ -96,26 +98,24 @@ describe('Dispute', () => {
 
     it('runs the command with no `this` context', async () => {
       const commands = {
-        command: jest.fn(function() {
+        command() {
           expect(this).toBeUndefined();
-        }),
+        },
       };
 
       const root = { packageJson, commandName, cli: commands };
       await createCli(root).execute([]);
-
-      expect(commands.command).toHaveBeenCalled();
     });
   });
 
   describe('createTestInterface', () => {
-    const createTestInterface = commands => {
+    const createTestInterface = (commands: object) => {
       const cli = createCli({ commandName, packageJson, cli: commands });
       return cli.createTestInterface();
     };
 
     it('returns a function', () => {
-      const test = createTestInterface({});
+      const test = createTestInterface({ command() {} });
 
       expect(test).toEqual(expect.any(Function));
     });

@@ -2,7 +2,7 @@
 import normalizeConfig from '../../normalize-config';
 import { describeOptions } from '../options';
 
-const createConfig = config =>
+const createConfig = (config: object) =>
   normalizeConfig({
     packageJson: { version: '1.2.3' },
     commandName: 'unit-test',
@@ -10,7 +10,7 @@ const createConfig = config =>
   });
 
 describe('Option help output', () => {
-  const getOptionsHelp = options => {
+  const getOptionsHelp = (options: object) => {
     const { cli } = createConfig({
       command() {},
       options,
@@ -20,7 +20,7 @@ describe('Option help output', () => {
   };
 
   describe('describeOptions', () => {
-    const describeOption = usage =>
+    const describeOption = (usage: string) =>
       getOptionsHelp({
         option: { usage },
       });

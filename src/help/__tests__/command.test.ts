@@ -2,7 +2,7 @@
 import describeCommandUsage from '../command';
 import normalizeConfig from '../../normalize-config';
 
-const createConfig = config =>
+const createConfig = (config: object) =>
   normalizeConfig({
     packageJson: { version: '1.2.3' },
     commandName: 'unit-test',
