@@ -32,7 +32,7 @@ export default function resolveCommand(
 
     // We've hit the end of the subcommand tree.
     const { subCommands } = finalCommand;
-    if (!subCommands.hasOwnProperty(commandName)) {
+    if (!Object.prototype.hasOwnProperty.call(subCommands, commandName)) {
       break;
     }
 

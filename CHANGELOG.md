@@ -3,7 +3,14 @@
 
 ## Unreleased
 ### Removed
-- Dropped support for non-LTS node versions (v7 and older).
+- Dropped support for non-LTS node versions (v7 and older). Upgrade to Node
+  `v8.12.0` or later.
+
+### Removed
+- Flow types no longer ship with this library.
+
+### Added
+- Now ships with TypeScript definitions.
 
 ## `0.4.0`
 ### Added
