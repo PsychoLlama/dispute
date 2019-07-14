@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 yarn lint || FAIL=1
 yarn test || FAIL=1
-yarn flow || FAIL=1
 
 if [[ -n "$FAIL" ]]; then
   exit 1
