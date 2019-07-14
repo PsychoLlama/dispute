@@ -1,6 +1,6 @@
 {
   "name": "dispute",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "description": "Command line argument parser",
   "main": "dist/dispute.js",
   "scripts": {
