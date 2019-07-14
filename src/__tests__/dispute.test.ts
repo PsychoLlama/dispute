@@ -4,7 +4,7 @@ import { createCli } from '../dispute';
 
 // Only mock `handleKnownErrors`.
 jest.mock('../error-utils', () => {
-  const module = (require: Object).requireActual('../error-utils');
+  const module = require.requireActual('../error-utils');
 
   return {
     ...module,
@@ -18,7 +18,7 @@ describe('Dispute', () => {
 
   beforeEach(() => {
     jest.clearAllMocks();
-    (handleKnownErrors: Function).mockImplementation((options, fn) => fn);
+    (handleKnownErrors as any).mockImplementation((options, fn) => fn);
   });
 
   it('creates a CLI', () => {
@@ -115,7 +115,7 @@ describe('Dispute', () => {
     };
 
     it('returns a function', () => {
-      const test = createTestInterface();
+      const test = createTestInterface({});
 
       expect(test).toEqual(expect.any(Function));
     });

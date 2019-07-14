@@ -9,7 +9,7 @@ import * as parseOption from './parse-value';
 // I've tried to get clever with `$ObjMap<$Call<...>>` and
 // wasted way too much time. If the user wants typed options,
 // they'll need to define it themselves.
-type Command = <T>(options: Record<string, any>, ...args: string[]) => T;
+type Command = <T, A>(options: Record<string, A>, ...args: string[]) => T;
 
 interface CommandOption {
   parseValue?: ParseValue;
@@ -102,14 +102,15 @@ export default function normalizeCommands(
     );
   }
 
-  const normalizedCommand = {};
-  Object.assign(normalizedCommand, {
+  const normalizedCommand: CommandTree = {
     args: parseCommandUsage(args),
     description,
     command,
     parent,
     name,
-  });
+    subCommands: {},
+    options: {},
+  };
 
   normalizedCommand.subCommands = normalizeSubcommands({
     parent: normalizedCommand,

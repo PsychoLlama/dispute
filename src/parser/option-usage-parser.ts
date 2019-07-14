@@ -74,7 +74,7 @@ export default function parseUsage(usageString: string): Usage {
   // -7331
   const isShortFlag = () => isType('ShortFlag');
   const readShortFlag = () => {
-    const flag = <ShortFlag>tokenizer.consumeNextToken();
+    const flag = tokenizer.consumeNextToken() as ShortFlag;
     assertUnique(flag, !!usage.short, 'short flag');
     usage.short = flag.name;
     expectCommaBetweenFlags();
@@ -84,7 +84,7 @@ export default function parseUsage(usageString: string): Usage {
   // --separated-value
   const isLongFlag = () => isType('LongFlag');
   const readLongFlag = () => {
-    const flag = <LongFlag>tokenizer.consumeNextToken();
+    const flag = tokenizer.consumeNextToken() as LongFlag;
     assertUnique(flag, !!usage.long, 'long flag');
     usage.long = flag.name;
     expectCommaBetweenFlags();
@@ -94,7 +94,7 @@ export default function parseUsage(usageString: string): Usage {
   // -c=[arg]
   const isPunctuation = () => isType('Punctuation');
   const readPunctuation = () => {
-    const punc = <Punctuation>tokenizer.consumeNextToken();
+    const punc = tokenizer.consumeNextToken() as Punctuation;
 
     switch (punc.value) {
       case ',':
@@ -108,7 +108,7 @@ export default function parseUsage(usageString: string): Usage {
   // [optional-arg]
   const isArgument = () => isType('Argument');
   const readArgument = () => {
-    const arg = <Argument>tokenizer.consumeNextToken();
+    const arg = tokenizer.consumeNextToken() as Argument;
     if (arg.variadic) {
       throw tokenizer.reportToken(
         arg,

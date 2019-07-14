@@ -46,11 +46,13 @@ export interface Tokenizer {
   peek(): Token;
 }
 
-export default function createTokenizer(inputStream: InputStream) {
+export default function createTokenizer(inputStream: InputStream): Tokenizer {
   let peekedToken: Token | null = null;
 
   // Continue reading the source string until the predicate is unsatisfied.
-  const readWhile = (predicate: (nextChar: string, acc: string) => boolean) => {
+  const readWhile = (
+    predicate: (nextChar: string, acc: string) => boolean
+  ): string => {
     let acc = '';
 
     while (!inputStream.eof() && predicate(inputStream.peek(), acc)) {
@@ -60,12 +62,13 @@ export default function createTokenizer(inputStream: InputStream) {
     return acc;
   };
 
-  const discardWhitespace = () => readWhile(char => /\s/.test(char));
+  const discardWhitespace = (): string =>
+    readWhile((char: string) => /\s/.test(char));
 
   // Reads a longer CLI flag like (e.g. --color).
   const readLongFlag = (loc: Loc): LongFlag => {
     inputStream.consumeNextChar();
-    const flagName = readWhile(char => /[\w-]/.test(char));
+    const flagName = readWhile((char: string) => /[\w-]/.test(char));
     const raw = `--${flagName}`;
 
     return {
@@ -78,7 +81,7 @@ export default function createTokenizer(inputStream: InputStream) {
 
   // Shorthand flags, like "$ cmd -q -s".
   const readShortFlag = (loc: Loc): ShortFlag => {
-    const flagName = readWhile(char => /\w/.test(char));
+    const flagName = readWhile((char: string) => /\w/.test(char));
     const raw = `-${flagName}`;
 
     if (!/\w/.test(flagName)) {
@@ -106,18 +109,8 @@ export default function createTokenizer(inputStream: InputStream) {
     };
   };
 
-  const isFlag = () => isChar('-');
-  const readFlag = (): ShortFlag | LongFlag => {
-    const loc = inputStream.getLoc();
-    inputStream.consumeNextChar();
-
-    // Two hyphens back to back can only mean one thing.
-    if (isChar('-')) return readLongFlag(loc);
-    return readShortFlag(loc);
-  };
-
   // Safely peek at the next character.
-  const isChar = (char: string) => {
+  const isChar = (char: string): boolean => {
     if (inputStream.eof()) {
       throw inputStream.generateError({
         message: `Usage string ended unexpectedly (looking for "${char}").`,
@@ -128,8 +121,18 @@ export default function createTokenizer(inputStream: InputStream) {
     return inputStream.peek() === char;
   };
 
+  const isFlag = (): boolean => isChar('-');
+  const readFlag = (): ShortFlag | LongFlag => {
+    const loc = inputStream.getLoc();
+    inputStream.consumeNextChar();
+
+    // Two hyphens back to back can only mean one thing.
+    if (isChar('-')) return readLongFlag(loc);
+    return readShortFlag(loc);
+  };
+
   // Assert the next character matches the given string.
-  const expect = (expected: string) => {
+  const expect = (expected: string): string => {
     if (inputStream.eof()) {
       throw inputStream.generateError({
         message: `Usage string ended abruptly (expected "${expected}").`,
@@ -149,7 +152,7 @@ export default function createTokenizer(inputStream: InputStream) {
     return actual;
   };
 
-  const isPunctuation = () => isChar('=') || isChar(',');
+  const isPunctuation = (): boolean => isChar('=') || isChar(',');
   const readPunctuation = (): Punctuation => {
     const loc = inputStream.getLoc();
     const value = inputStream.consumeNextChar();
@@ -161,7 +164,7 @@ export default function createTokenizer(inputStream: InputStream) {
     };
   };
 
-  const readVariadicPunctuation = () => {
+  const readVariadicPunctuation = (): string => {
     return expect('.') + expect('.') + expect('.');
   };
 
@@ -170,7 +173,7 @@ export default function createTokenizer(inputStream: InputStream) {
   // - <variadic...>
   // - [optional]
   // - [value...]
-  const isArgument = () => isChar('<') || isChar('[');
+  const isArgument = (): boolean => isChar('<') || isChar('[');
   const readArgument = (): Argument => {
     const loc = inputStream.getLoc();
     let raw = '';
@@ -178,7 +181,7 @@ export default function createTokenizer(inputStream: InputStream) {
     const required = isChar('<');
     raw += expect(required ? '<' : '[');
 
-    const argName = readWhile(char => /[\w-]/.test(char));
+    const argName = readWhile((char: string) => /[\w-]/.test(char));
     raw += argName;
 
     const variadic = isChar('.');
@@ -197,14 +200,14 @@ export default function createTokenizer(inputStream: InputStream) {
   };
 
   const controls: Tokenizer = {
-    eof: () => {
+    eof: (): boolean => {
       if (peekedToken) return false;
 
       discardWhitespace();
       return inputStream.eof();
     },
 
-    consumeNextToken() {
+    consumeNextToken(): Token {
       if (peekedToken) {
         const result = peekedToken;
         peekedToken = null;
@@ -229,7 +232,7 @@ export default function createTokenizer(inputStream: InputStream) {
       });
     },
 
-    reportToken(token, message) {
+    reportToken(token: Token, message: string): SyntaxError {
       return inputStream.generateError({
         ...token,
         length: token.raw.length,
@@ -238,12 +241,12 @@ export default function createTokenizer(inputStream: InputStream) {
     },
 
     // Look at the next token without removing it from the queue.
-    peek() {
+    peek(): Token {
       peekedToken = peekedToken || this.consumeNextToken();
       return peekedToken;
     },
 
-    isType: type => {
+    isType: (type: string): boolean => {
       const token = controls.peek();
       return token.type === type;
     },

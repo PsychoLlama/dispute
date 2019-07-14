@@ -104,7 +104,7 @@ describe('Command normalizer', () => {
       normalize({
         command() {},
         options: {
-          quiet: ({}: any),
+          quiet: {} as any,
         },
       });
 

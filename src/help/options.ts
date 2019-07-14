@@ -2,12 +2,12 @@
 import { sortAlphabetically, padStringMatchingLongest } from './utils';
 import { CommandTree } from '../normalize-commands';
 
-type CommandOptions = $PropertyType<CommandTree, 'options'>;
-type CommandOption = $PropertyType<CommandOptions, 'index-key'>;
+type CommandOptions = CommandTree['options'];
+type CommandOption = CommandOptions['index-key'];
 
 const getOptionSortableName = (option: CommandOption): string => {
   const name = option.usage.long || option.usage.short;
-  return name;
+  return name as string;
 };
 
 const sortOptionsAlphabetically = (

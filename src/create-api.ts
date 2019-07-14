@@ -49,15 +49,7 @@ const wrapCommand = (command, optionsDefinition) => (...args) => {
   return command(normalizedOptions, ...params);
 };
 
-// Forgive me. The return value is convenient and predictable,
-// but comes at the cost of type inference. It's too sketchy
-// for Flow to understand. My hope is that either CLI authors
-// will add Flow (unlikely) or that consumers will contribute
-// a solid typedef per package to flow-typed. I don't see an
-// easier way.
-type Api = any;
-
-export default function createApi(commandTree: CommandTree): Api {
+export default function createApi(commandTree: CommandTree) {
   const api = commandTree.command
     ? wrapCommand(commandTree.command, commandTree.options)
     : Object.create(null);

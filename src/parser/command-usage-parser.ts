@@ -13,7 +13,7 @@ export interface Argument {
 export default function parseCommandUsage(usage: string): Argument[] {
   const tokenizer = createTokenizer(createStream(usage));
   const { isType } = tokenizer;
-  const args: ArgToken[] = [];
+  const args: Argument[] = [];
 
   const readAnyToken = (): any => tokenizer.consumeNextToken();
 

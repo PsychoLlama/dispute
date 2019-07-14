@@ -3,7 +3,7 @@ import normalizeArgv, { looksLikeFlag, isShortFlag } from './normalize-argv';
 import { CommandTree } from './normalize-commands';
 import { makeParseErrorFactory } from './error-utils';
 
-type Options = $PropertyType<CommandTree, 'options'>;
+type Options = CommandTree['options'];
 
 const indexOptions = (options: Options) => {
   const shortFlags = new Map();
@@ -99,7 +99,7 @@ export default function parseArgv(
 
   // The argv stack is consumed left to right.
   while (stack.length) {
-    const arg = stack.shift();
+    const arg = stack.shift() as string;
 
     // Must be a command argument.
     if (!looksLikeFlag(arg)) {

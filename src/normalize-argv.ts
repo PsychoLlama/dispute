@@ -7,7 +7,7 @@ const isConjoinedWithValue = (argument: string) => /^--\w+?=/.test(argument);
 
 // Massages the argv until it's ready for consumption.
 export default function normalizeArgv(argv: string[]): string[] {
-  const normalized = [];
+  const normalized: string[] = [];
 
   argv.forEach(arg => {
     if (isConjoinedWithValue(arg)) {

@@ -9,11 +9,12 @@ const KNOWN_ERROR_KEY = Symbol('Dispute: KNOWN_ERROR_KEY');
 const noop = () => {};
 
 export class ExitCode extends Error {
-  exitCode: number;
+  public exitCode: number;
 
-  constructor(exitCode: number) {
+  public constructor(exitCode: number) {
     super(`ExitCode(${exitCode})`);
 
+    this.exitCode = 0;
     Object.defineProperties(this, {
       [KNOWN_ERROR_KEY]: {
         enumerable: false,
@@ -33,9 +34,9 @@ export class ExitCode extends Error {
 // message (without a stack trace) and exit with the
 // given code.
 export class FatalError extends ExitCode {
-  exitCode: number;
+  public [ENABLE_ERROR_LOGGING]: boolean;
 
-  constructor(message: string, exitCode: number = 1) {
+  public constructor(message: string, exitCode: number = 1) {
     super(exitCode);
 
     this.message = message;

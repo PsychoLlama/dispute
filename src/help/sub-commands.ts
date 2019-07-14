@@ -6,7 +6,7 @@ import { CommandTree } from '../normalize-commands';
 // - longer-command     description
 // - no-description
 export default function describeSubCommands(
-  commands: $PropertyType<CommandTree, 'subCommands'>
+  commands: CommandTree['subCommands']
 ) {
   const commandNames = Object.keys(commands).sort(sortAlphabetically);
   const padCommandName = padStringMatchingLongest(commandNames, {

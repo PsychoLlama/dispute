@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 // @flow
 import { createCli } from '../../dispute';
-import pkg from '../../../package';
+import pkg from '../../../package.json';
 
 import commit from './commit';
 import diff from './diff';
