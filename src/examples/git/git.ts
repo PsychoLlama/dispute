@@ -1,13 +1,12 @@
 #!/usr/bin/env node
 import { createCli } from '../../dispute';
-import pkg from '../../../package.json';
 
 import commit from './commit';
 import diff from './diff';
 
 const cli = createCli({
   commandName: 'git',
-  packageJson: pkg,
+  packageJson: require('../../../package'),
   cli: {
     description: 'Distributed version control system',
     subCommands: {
