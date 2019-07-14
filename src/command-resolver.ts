@@ -2,10 +2,10 @@
 import { CommandTree } from './normalize-commands';
 import { looksLikeFlag } from './normalize-argv';
 
-type ParsedCommand = {
+interface ParsedCommand {
   command: CommandTree;
   args: string[];
-};
+}
 
 // Separate the command from the given arguments.
 export default function resolveCommand(

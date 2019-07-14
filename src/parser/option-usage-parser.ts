@@ -8,14 +8,14 @@ import createTokenizer, {
   Punctuation,
 } from './usage-tokenizer';
 
-export type Usage = {
+export interface Usage {
   short: null | void | string;
   long: null | void | string;
   argument: null | void | {
     required: boolean;
     name: string;
   };
-};
+}
 
 export default function parseUsage(usageString: string): Usage {
   const tokenizer = createTokenizer(createStream(usageString));

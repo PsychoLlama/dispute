@@ -1,39 +1,42 @@
 // @flow
 import { InputStream, Loc } from './input-stream';
 
-export type ShortFlag = {
+export interface ShortFlag {
   type: 'ShortFlag';
   name: string;
   raw: string;
   loc: Loc;
-};
+}
 
-export type LongFlag = {
+export interface LongFlag {
   type: 'LongFlag';
   name: string;
   raw: string;
   loc: Loc;
-};
+}
 
-export type Argument = {
+export interface Argument {
   type: 'Argument';
   required: boolean;
   variadic: boolean;
   name: string;
   raw: string;
   loc: Loc;
-};
+}
 
-export type Punctuation = {
+export interface Punctuation {
   type: 'Punctuation';
   value: string;
   raw: string;
   loc: Loc;
-};
+}
 
 export type Token = ShortFlag | LongFlag | Punctuation | Argument;
 
-type ErrorReport = { loc: Loc; raw: string };
+interface ErrorReport {
+  loc: Loc;
+  raw: string;
+}
 
 export interface Tokenizer {
   reportToken(report: ErrorReport, message: string): SyntaxError;

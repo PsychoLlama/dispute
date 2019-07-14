@@ -64,12 +64,12 @@ const extractPossibleArgument = (argvStack: string[]): void | string => {
   return argument;
 };
 
-type ParsedOutput = {
+interface ParsedOutput {
   globalOptions: { [optionName: string]: mixed };
   options: { [optionName: string]: mixed };
   invalidOptions: string[];
   args: string[];
-};
+}
 
 /**
  * Split commands arguments into two buckets:

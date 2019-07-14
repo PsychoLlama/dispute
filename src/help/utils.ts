@@ -1,7 +1,7 @@
 // @flow
-type PaddingOptions = {
+interface PaddingOptions {
   extraWhitespace: number;
-};
+}
 
 export const sortAlphabetically = (a: string, b: string) => (a > b ? 1 : -1);
 

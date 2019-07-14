@@ -9,23 +9,23 @@ import * as parseOption from './parse-value';
 // I've tried to get clever with `$ObjMap<$Call<...>>` and
 // wasted way too much time. If the user wants typed options,
 // they'll need to define it themselves.
-type Command = <T>(options: Object, ...args: string[]) => T;
+type Command = <T>(options: Record<string, any>, ...args: string[]) => T;
 
-type CommandOption = {
+interface CommandOption {
   parseValue?: ParseValue;
   description?: string;
-};
+}
 
 // I really wish Flow could infer the return value.
 type ParseValue = <T>(option: parseOption.OptionArgument) => T;
 
-type Subcommands<Subcommand> = {
+interface Subcommands<Subcommand> {
   [commandName: string]: Subcommand;
-};
+}
 
-type CommandOptions<ParseValue extends Object> = {
+interface CommandOptions<ParseValue extends Record<string, any>> {
   [optionName: string]: CommandOption & ParseValue;
-};
+}
 
 // Loose type. Allows undefined fields.
 type CommandOptionsLoose = CommandOptions<{
@@ -34,13 +34,13 @@ type CommandOptionsLoose = CommandOptions<{
   usage: string;
 }>;
 
-export type CommandConfig = {
+export interface CommandConfig {
   subCommands?: Subcommands<CommandConfig>;
   options?: CommandOptionsLoose;
   description?: string;
   command?: Command;
   args?: string;
-};
+}
 
 // Strict type. All fields must have defaults.
 type CommandOptionsStrict = CommandOptions<{
@@ -50,7 +50,7 @@ type CommandOptionsStrict = CommandOptions<{
   usage: Usage;
 }>;
 
-export type CommandTree = {
+export interface CommandTree {
   subCommands: Subcommands<CommandTree>;
   options: CommandOptionsStrict;
   description: string | null;
@@ -58,7 +58,7 @@ export type CommandTree = {
   command?: Command;
   args: Argument[];
   name: string;
-};
+}
 
 /**
  * Recursively parse, validate, and provide defaults for all commands.

@@ -12,20 +12,20 @@ import { FatalError } from './error-utils';
 // on. In the future it could be expanded to show
 // "bugs.url" on unhandled errors, print the license
 // & homepage in `help`, detect manpages, etc.
-type PkgJson = {
+interface PkgJson {
   version: string;
-};
+}
 
-export type Config = {
+export interface Config {
   packageJson: PkgJson;
   commandName: string;
   cli?: CommandConfig;
-};
+}
 
-export type NormalizedConfig = {
+export interface NormalizedConfig {
   packageJson: PkgJson;
   cli: CommandTree;
-};
+}
 
 const defaultCliImplementation = {
   command() {

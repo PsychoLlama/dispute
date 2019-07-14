@@ -76,9 +76,9 @@ const createHandledRejection = error => {
   return rejection;
 };
 
-type ErrorHandlerOptions = {
+interface ErrorHandlerOptions {
   log?: (msg: string) => void;
-};
+}
 
 export const handleKnownErrors = <ArgType, T>(
   options: ErrorHandlerOptions,

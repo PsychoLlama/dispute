@@ -2,13 +2,13 @@
 import createTokenizer, { Argument as ArgToken } from './usage-tokenizer';
 import createStream from './input-stream';
 
-export type Argument = {
+export interface Argument {
   required: boolean;
   variadic: boolean;
   type: 'Argument';
   name: string;
   raw: string;
-};
+}
 
 export default function parseCommandUsage(usage: string): Argument[] {
   const tokenizer = createTokenizer(createStream(usage));

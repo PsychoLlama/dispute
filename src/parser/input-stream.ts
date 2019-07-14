@@ -2,16 +2,16 @@
 import indent from 'indent-string';
 import chalk from 'chalk';
 
-export type Loc = {
+export interface Loc {
   column: number;
   line: number;
-};
+}
 
-type ErrorReport = {
+interface ErrorReport {
   message: string;
   length?: number;
   loc: Loc;
-};
+}
 
 export interface InputStream {
   generateError(report: ErrorReport): SyntaxError;
@@ -21,11 +21,11 @@ export interface InputStream {
   getLoc(): Loc;
 }
 
-type FrameDetails = {
+interface FrameDetails {
   sourceText: string;
   length: number;
   loc: Loc;
-};
+}
 
 export const createErrorFrame = (frame: FrameDetails) => {
   const offset = Array(frame.loc.column)

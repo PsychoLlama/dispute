@@ -1,7 +1,7 @@
 // @flow
-type Options = {
-  message?: string,
-};
+interface Options {
+  message?: string;
+}
 
 const commit = ({ message }: Options) => {
   return message ? `Committed` : 'Opening editor...';

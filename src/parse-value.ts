@@ -2,11 +2,11 @@
 const TRUTHY_VALUES = new Set(['true', 'yes', 'on']);
 const FALSEY_VALUES = new Set(['false', 'no', 'off']);
 
-export type OptionArgument = {
+export interface OptionArgument {
   createParseError: (errorMessage: string) => Error;
   input: string;
   flag: string;
-};
+}
 
 // --color, --color=yes, --color=on
 export const asBoolean = (arg: OptionArgument): boolean => {
