@@ -1,4 +1,3 @@
-// @flow
 const TRUTHY_VALUES = new Set(['true', 'yes', 'on']);
 const FALSEY_VALUES = new Set(['false', 'no', 'off']);
 

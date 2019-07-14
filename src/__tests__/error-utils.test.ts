@@ -1,4 +1,3 @@
-// @flow
 import {
   ExitCode,
   FatalError,

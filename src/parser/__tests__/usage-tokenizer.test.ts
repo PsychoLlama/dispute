@@ -1,4 +1,3 @@
-// @flow
 import createTokenizer from '../usage-tokenizer';
 import createStream from '../input-stream';
 

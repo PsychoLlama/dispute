@@ -1,4 +1,3 @@
-// @flow
 import { InputStream, Loc } from './input-stream';
 
 export interface ShortFlag {

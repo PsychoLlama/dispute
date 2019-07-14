@@ -1,4 +1,3 @@
-// @flow
 import * as parseValue from '../parse-value';
 import normalize, { normalizeOptions } from '../normalize-commands';
 import parseArgv from '../argv-parser';

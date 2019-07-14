@@ -1,4 +1,3 @@
-// @flow
 import normalizeConfig from '../../normalize-config';
 import generateHelpPage from '../index';
 

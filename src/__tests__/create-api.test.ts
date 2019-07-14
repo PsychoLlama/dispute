@@ -1,4 +1,3 @@
-// @flow
 import normalizeCommands from '../normalize-commands';
 import createApi from '../create-api';
 

@@ -1,4 +1,3 @@
-// @flow
 import describeCommandUsage from '../command';
 import normalizeConfig from '../../normalize-config';
 

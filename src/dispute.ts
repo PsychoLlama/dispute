@@ -1,4 +1,3 @@
-// @flow
 import { handleKnownErrors, FatalError, ExitCode } from './error-utils';
 import normalizeConfig, { Config } from './normalize-config';
 import { getCommandPath } from './help/command';

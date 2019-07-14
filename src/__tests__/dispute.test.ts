@@ -1,4 +1,3 @@
-// @flow
 import { handleKnownErrors } from '../error-utils';
 import { createCli } from '../dispute';
 

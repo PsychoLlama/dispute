@@ -1,4 +1,3 @@
-// @flow
 import parseUsage from '../command-usage-parser';
 
 describe('Command usage parser', () => {

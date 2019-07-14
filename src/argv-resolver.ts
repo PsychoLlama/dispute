@@ -1,4 +1,3 @@
-// @flow
 import chalk from 'chalk';
 
 import { normalizeOptions, CommandTree } from './normalize-commands';

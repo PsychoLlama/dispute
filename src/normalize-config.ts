@@ -1,4 +1,3 @@
-// @flow
 import assert from 'minimalistic-assert';
 import chalk from 'chalk';
 

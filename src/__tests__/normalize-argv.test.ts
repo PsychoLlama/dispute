@@ -1,4 +1,3 @@
-// @flow
 import normalizeArgv from '../normalize-argv';
 
 describe('normalizeArgv(...)', () => {

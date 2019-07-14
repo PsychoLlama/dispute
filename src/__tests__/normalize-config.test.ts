@@ -1,4 +1,3 @@
-// @flow
 import normalize from '../normalize-config';
 
 describe('Config normalizer', () => {

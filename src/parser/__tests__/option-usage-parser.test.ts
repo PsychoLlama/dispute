@@ -1,4 +1,3 @@
-// @flow
 import parseUsage from '../option-usage-parser';
 
 describe('Usage parser', () => {

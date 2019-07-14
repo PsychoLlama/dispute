@@ -1,4 +1,3 @@
-// @flow
 import * as parseOption from '../parse-value';
 
 describe('Parse option', () => {

@@ -1,4 +1,3 @@
-// @flow
 export const looksLikeFlag = (argument: string) => /^-/.test(argument);
 export const isShortFlag = (argument: string) => /^-[^-]/.test(argument);
 

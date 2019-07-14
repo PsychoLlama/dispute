@@ -1,4 +1,3 @@
-// @flow
 import normalizeConfig from '../normalize-commands';
 import resolveCommand from '../command-resolver';
 

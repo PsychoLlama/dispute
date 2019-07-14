@@ -1,4 +1,3 @@
-// @flow
 import indent from 'indent-string';
 import chalk from 'chalk';
 

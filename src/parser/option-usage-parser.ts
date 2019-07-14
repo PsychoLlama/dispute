@@ -1,4 +1,3 @@
-// @flow
 import createStream from './input-stream';
 import createTokenizer, {
   Token,

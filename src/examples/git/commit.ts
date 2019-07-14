@@ -1,4 +1,3 @@
-// @flow
 interface Options {
   message?: string;
 }

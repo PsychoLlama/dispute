@@ -1,4 +1,3 @@
-// @flow
 import normalizeArgv, { looksLikeFlag, isShortFlag } from './normalize-argv';
 import { makeParseErrorFactory } from './error-utils';
 import { CommandTree } from './normalize-commands';

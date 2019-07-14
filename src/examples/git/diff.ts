@@ -1,4 +1,3 @@
-// @flow
 const diff = async (options: {}, rev: string) => {
   if (rev) {
     return `Diff at revision "${rev}"`;

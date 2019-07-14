@@ -1,4 +1,3 @@
-// @flow
 import createStream, { createErrorFrame } from '../input-stream';
 
 describe('Input stream', () => {

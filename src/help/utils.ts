@@ -1,4 +1,3 @@
-// @flow
 interface PaddingOptions {
   extraWhitespace: number;
 }

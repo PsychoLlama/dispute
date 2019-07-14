@@ -1,4 +1,3 @@
-// @flow
 import { CommandTree } from './normalize-commands';
 import { looksLikeFlag } from './normalize-argv';
 

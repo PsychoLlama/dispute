@@ -1,4 +1,3 @@
-// @flow
 import validateArguments from '../argument-validator';
 import normalizeConfig from '../normalize-commands';
 

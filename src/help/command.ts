@@ -1,4 +1,3 @@
-// @flow
 import { CommandTree } from '../normalize-commands';
 
 // ['cmd', 'sub', 'command']

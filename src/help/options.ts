@@ -1,4 +1,3 @@
-// @flow
 import { sortAlphabetically, padStringMatchingLongest } from './utils';
 import { CommandTree } from '../normalize-commands';
 

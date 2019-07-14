@@ -1,4 +1,3 @@
-// @flow
 import cli from '../git/git';
 
 describe('Integration test: git', () => {
