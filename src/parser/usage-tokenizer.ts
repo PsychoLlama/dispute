@@ -225,7 +225,6 @@ export default function createTokenizer(inputStream: InputStream): Tokenizer {
       if (isFlag()) return readFlag();
       if (isArgument()) return readArgument();
 
-      // Workaround for Flow. It doesn't know about assertions.
       throw inputStream.generateError({
         message: `Unexpected character "${inputStream.peek()}"`,
         loc: inputStream.getLoc(),
