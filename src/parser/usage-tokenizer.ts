@@ -1,42 +1,42 @@
 // @flow
-import type { InputStream, Loc } from './input-stream';
+import { InputStream, Loc } from './input-stream';
 
 export type ShortFlag = {
-  type: 'ShortFlag',
-  name: string,
-  raw: string,
-  loc: Loc,
+  type: 'ShortFlag';
+  name: string;
+  raw: string;
+  loc: Loc;
 };
 
 export type LongFlag = {
-  type: 'LongFlag',
-  name: string,
-  raw: string,
-  loc: Loc,
+  type: 'LongFlag';
+  name: string;
+  raw: string;
+  loc: Loc;
 };
 
 export type Argument = {
-  type: 'Argument',
-  required: boolean,
-  variadic: boolean,
-  name: string,
-  raw: string,
-  loc: Loc,
+  type: 'Argument';
+  required: boolean;
+  variadic: boolean;
+  name: string;
+  raw: string;
+  loc: Loc;
 };
 
 export type Punctuation = {
-  type: 'Punctuation',
-  value: string,
-  raw: string,
-  loc: Loc,
+  type: 'Punctuation';
+  value: string;
+  raw: string;
+  loc: Loc;
 };
 
 export type Token = ShortFlag | LongFlag | Punctuation | Argument;
 
-type ErrorReport = { loc: Loc, raw: string };
+type ErrorReport = { loc: Loc; raw: string };
 
 export interface Tokenizer {
-  reportToken(ErrorReport, message: string): SyntaxError;
+  reportToken(report: ErrorReport, message: string): SyntaxError;
   isType(type: string): boolean;
   consumeNextToken(): Token;
   eof(): boolean;
@@ -44,7 +44,7 @@ export interface Tokenizer {
 }
 
 export default function createTokenizer(inputStream: InputStream) {
-  let peekedToken = null;
+  let peekedToken: Token | null = null;
 
   // Continue reading the source string until the predicate is unsatisfied.
   const readWhile = (predicate: (nextChar: string, acc: string) => boolean) => {
@@ -114,7 +114,7 @@ export default function createTokenizer(inputStream: InputStream) {
   };
 
   // Safely peek at the next character.
-  const isChar = char => {
+  const isChar = (char: string) => {
     if (inputStream.eof()) {
       throw inputStream.generateError({
         message: `Usage string ended unexpectedly (looking for "${char}").`,
@@ -126,7 +126,7 @@ export default function createTokenizer(inputStream: InputStream) {
   };
 
   // Assert the next character matches the given string.
-  const expect = expected => {
+  const expect = (expected: string) => {
     if (inputStream.eof()) {
       throw inputStream.generateError({
         message: `Usage string ended abruptly (expected "${expected}").`,
