@@ -1,10 +1,8 @@
 // @flow
 import assert from 'minimalistic-assert';
 
-import parseCommandUsage, {
-  type Argument,
-} from './parser/command-usage-parser';
-import parseOptionUsage, { type Usage } from './parser/option-usage-parser';
+import parseCommandUsage, { Argument } from './parser/command-usage-parser';
+import parseOptionUsage, { Usage } from './parser/option-usage-parser';
 import * as parseOption from './parse-value';
 
 // The best options type signature I can offer is `Object`.
@@ -25,7 +23,7 @@ type Subcommands<Subcommand> = {
   [commandName: string]: Subcommand,
 };
 
-type CommandOptions<ParseValue: Object> = {
+type CommandOptions<ParseValue extends Object> = {
   [optionName: string]: CommandOption & ParseValue,
 };
 
@@ -212,9 +210,9 @@ const enforceOptionUniqueness = ({
 }) => {
   const flags = new Map();
 
-  const assertUniqueFlag = (optionName, flagName, prefix) => {
+  const assertUniqueFlag = (optionName: string, flagName: string, prefix: string) => {
     if (!flags.has(flagName)) return;
-    const otherOptionName: string = (flags.get(flagName): any);
+    const otherOptionName = flags.get(flagName);
 
     throw new Error(
       `The "${prefix + flagName}" flag is redefined by multiple options\n` +

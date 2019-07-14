@@ -1,6 +1,6 @@
 // @flow
 import { handleKnownErrors, FatalError, ExitCode } from './error-utils';
-import normalizeConfig, { type Config } from './normalize-config';
+import normalizeConfig, { Config } from './normalize-config';
 import { getCommandPath } from './help/command';
 import * as parseValue from './parse-value';
 import parseArgv from './argv-resolver';

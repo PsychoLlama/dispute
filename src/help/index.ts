@@ -2,11 +2,12 @@
 import indent from 'indent-string';
 
 import describeCommandUsage, { getCommandPath } from './command';
-import type { CommandTree } from '../normalize-commands';
+import { CommandTree } from '../normalize-commands';
 import describeSubCommands from './sub-commands';
 import { describeOptions } from './options';
 
-const hasSubCommands = command => Object.keys(command.subCommands).length > 0;
+const hasSubCommands = (command: CommandTree) =>
+  Object.keys(command.subCommands).length > 0;
 
 export default function generateHelpPage(command: CommandTree) {
   const summary = {

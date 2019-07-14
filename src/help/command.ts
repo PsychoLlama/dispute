@@ -1,10 +1,10 @@
 // @flow
-import type { CommandTree } from '../normalize-commands';
+import { CommandTree } from '../normalize-commands';
 
 // ['cmd', 'sub', 'command']
 export const getCommandPath = (command: CommandTree) => {
   const path = [command.name];
-  let parent = command;
+  let parent: CommandTree | null = command;
 
   while ((parent = parent.parent)) {
     path.unshift(parent.name);

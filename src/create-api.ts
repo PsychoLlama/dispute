@@ -1,5 +1,5 @@
 // @flow
-import type { CommandTree } from './normalize-commands';
+import { CommandTree } from './normalize-commands';
 
 // Map<flagName, optionName>
 const indexOptionsByName = options => {

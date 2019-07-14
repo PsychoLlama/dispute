@@ -1,7 +1,7 @@
 // @flow
 import chalk from 'chalk';
 
-import type { CommandTree } from './normalize-commands';
+import { CommandTree } from './normalize-commands';
 import { FatalError } from './error-utils';
 
 export default function validateArguments(

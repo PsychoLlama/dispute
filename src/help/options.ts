@@ -1,16 +1,19 @@
 // @flow
 import { sortAlphabetically, padStringMatchingLongest } from './utils';
-import type { CommandTree } from '../normalize-commands';
+import { CommandTree } from '../normalize-commands';
 
 type CommandOptions = $PropertyType<CommandTree, 'options'>;
 type CommandOption = $PropertyType<CommandOptions, 'index-key'>;
 
-const getOptionSortableName = option => {
-  const name: any = option.usage.long || option.usage.short;
-  return (name: string);
+const getOptionSortableName = (option: CommandOption): string => {
+  const name = option.usage.long || option.usage.short;
+  return name;
 };
 
-const sortOptionsAlphabetically = (option1, option2) => {
+const sortOptionsAlphabetically = (
+  option1: CommandOption,
+  option2: CommandOption
+) => {
   const option1Name = getOptionSortableName(option1);
   const option2Name = getOptionSortableName(option2);
   return sortAlphabetically(option1Name, option2Name);

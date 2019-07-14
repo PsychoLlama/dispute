@@ -1,10 +1,10 @@
 // @flow
-import type { CommandTree } from './normalize-commands';
+import { CommandTree } from './normalize-commands';
 import { looksLikeFlag } from './normalize-argv';
 
 type ParsedCommand = {
-  command: CommandTree,
-  args: string[],
+  command: CommandTree;
+  args: string[];
 };
 
 // Separate the command from the given arguments.

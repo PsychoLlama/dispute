@@ -1,6 +1,6 @@
 // @flow
 import normalizeArgv, { looksLikeFlag, isShortFlag } from './normalize-argv';
-import type { CommandTree } from './normalize-commands';
+import { CommandTree } from './normalize-commands';
 import { makeParseErrorFactory } from './error-utils';
 
 type Options = $PropertyType<CommandTree, 'options'>;

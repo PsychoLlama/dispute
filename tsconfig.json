@@ -8,10 +8,10 @@
     "declarationMap": true,
     "module": "commonjs",
     "declaration": true,
+    "target": "es2015",
     "sourceMap": true,
     "outDir": "dist",
     "newLine": "LF",
-    "target": "es5",
     "strict": true
   },
   "include": ["src"],

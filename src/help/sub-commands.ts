@@ -1,6 +1,6 @@
 // @flow
 import { sortAlphabetically, padStringMatchingLongest } from './utils';
-import type { CommandTree } from '../normalize-commands';
+import { CommandTree } from '../normalize-commands';
 
 // - command            description
 // - longer-command     description

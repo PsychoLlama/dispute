@@ -3,18 +3,18 @@ import indent from 'indent-string';
 import chalk from 'chalk';
 
 export type Loc = {
-  column: number,
-  line: number,
+  column: number;
+  line: number;
 };
 
 type ErrorReport = {
-  message: string,
-  length?: number,
-  loc: Loc,
+  message: string;
+  length?: number;
+  loc: Loc;
 };
 
 export interface InputStream {
-  generateError(ErrorReport): SyntaxError;
+  generateError(report: ErrorReport): SyntaxError;
   consumeNextChar(): string;
   peek(): string;
   eof(): boolean;
@@ -22,9 +22,9 @@ export interface InputStream {
 }
 
 type FrameDetails = {
-  sourceText: string,
-  length: number,
-  loc: Loc,
+  sourceText: string;
+  length: number;
+  loc: Loc;
 };
 
 export const createErrorFrame = (frame: FrameDetails) => {

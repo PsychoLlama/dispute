@@ -1,19 +1,19 @@
 // @flow
-import createTokenizer, { type Argument as ArgToken } from './usage-tokenizer';
+import createTokenizer, { Argument as ArgToken } from './usage-tokenizer';
 import createStream from './input-stream';
 
 export type Argument = {
-  required: boolean,
-  variadic: boolean,
-  type: 'Argument',
-  name: string,
-  raw: string,
+  required: boolean;
+  variadic: boolean;
+  type: 'Argument';
+  name: string;
+  raw: string;
 };
 
 export default function parseCommandUsage(usage: string): Argument[] {
   const tokenizer = createTokenizer(createStream(usage));
   const { isType } = tokenizer;
-  const args = [];
+  const args: ArgToken[] = [];
 
   const readAnyToken = (): any => tokenizer.consumeNextToken();
 

@@ -1,11 +1,11 @@
 // @flow
 import createStream from './input-stream';
 import createTokenizer, {
-  type Token,
-  type Argument,
-  type LongFlag,
-  type ShortFlag,
-  type Punctuation,
+  Token,
+  Argument,
+  LongFlag,
+  ShortFlag,
+  Punctuation,
 } from './usage-tokenizer';
 
 export type Usage = {

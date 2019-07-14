@@ -3,8 +3,8 @@ import assert from 'minimalistic-assert';
 import chalk from 'chalk';
 
 import normalizeCommands, {
-  type CommandTree,
-  type CommandConfig,
+  CommandTree,
+  CommandConfig,
 } from './normalize-commands';
 import { FatalError } from './error-utils';
 
@@ -13,18 +13,18 @@ import { FatalError } from './error-utils';
 // "bugs.url" on unhandled errors, print the license
 // & homepage in `help`, detect manpages, etc.
 type PkgJson = {
-  version: string,
+  version: string;
 };
 
 export type Config = {
-  packageJson: PkgJson,
-  commandName: string,
-  cli?: CommandConfig,
+  packageJson: PkgJson;
+  commandName: string;
+  cli?: CommandConfig;
 };
 
 export type NormalizedConfig = {
-  packageJson: PkgJson,
-  cli: CommandTree,
+  packageJson: PkgJson;
+  cli: CommandTree;
 };
 
 const defaultCliImplementation = {
