@@ -1,6 +1,12 @@
 # Changelog
 `dispute` follows [this changelog style](https://keepachangelog.com/en/1.0.0/) and adheres to [semver](https://semver.org/).
 
+## `0.5.1`
+### Changed
+- Dropped engine version requirement to node `>=8`. The transitive dependency
+  `execa` forced an update, but the dependent libraries are only used in
+  development.
+
 ## `0.5.0`
 ### Removed
 - Dropped support for non-LTS node versions (v7 and older). Upgrade to Node
