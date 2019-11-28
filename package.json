@@ -58,6 +58,7 @@
   "dependencies": {
     "chalk": "^3.0.0",
     "indent-string": "^4.0.0",
-    "minimalistic-assert": "^1.0.1"
+    "minimalistic-assert": "^1.0.1",
+    "parjs": "0.12.2"
   }
 }
