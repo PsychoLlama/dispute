@@ -19,13 +19,16 @@ const parser = P.createLanguage({
         required: false,
       }))
       .chain(arg => {
-        if (/^_/.test(arg.name)) {
+        if (/^_/.test(arg.name))
           return P.fail(`Names can't start with an underscore.`);
-        }
 
-        if (/^-/.test(arg.name)) {
+        if (/_$/.test(arg.name))
+          return P.fail(`Names can't end in an underscore.`);
+
+        if (/^-/.test(arg.name))
           return P.fail(`Names can't start with a hyphen.`);
-        }
+
+        if (/-$/.test(arg.name)) return P.fail(`Names can't end in a hyphen.`);
 
         return P.of(arg);
       });

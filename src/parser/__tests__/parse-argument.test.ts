@@ -45,8 +45,20 @@ describe('parseArgument', () => {
       expect(fail).toThrow(/hyphen/i);
     });
 
+    it('throws if the name ends with a hyphen', () => {
+      const fail = () => parseArgument('<argument->');
+
+      expect(fail).toThrow(/hyphen/i);
+    });
+
     it('throws if the name begins with an underline', () => {
       const fail = () => parseArgument('<_argument>');
+
+      expect(fail).toThrow(/underscore/i);
+    });
+
+    it('throws if the name ends with an underline', () => {
+      const fail = () => parseArgument('<argument_>');
 
       expect(fail).toThrow(/underscore/i);
     });
