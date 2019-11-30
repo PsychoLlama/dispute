@@ -29,7 +29,7 @@ export class ExitCode extends Error {
 export class FatalError extends ExitCode {
   public [ENABLE_ERROR_LOGGING]: boolean;
 
-  public constructor(message: string, exitCode: number = 1) {
+  public constructor(message: string, exitCode = 1) {
     super(exitCode);
 
     this.message = message;
