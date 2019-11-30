@@ -4,7 +4,7 @@ describe('parseArgument', () => {
   it('throws if parsing fails', () => {
     const fail = () => parseArgument('-plsThrow*');
 
-    expect(fail).toThrow(SyntaxError);
+    expect(fail).toThrow(/pars(ing|er)/i);
   });
 
   it('includes the raw input in the parsed output', () => {
@@ -49,6 +49,12 @@ describe('parseArgument', () => {
       const fail = () => parseArgument('<_argument>');
 
       expect(fail).toThrow(/underscore/i);
+    });
+
+    it('does not allow empty names', () => {
+      const fail = () => parseArgument('<>');
+
+      expect(fail).toThrow();
     });
   });
 

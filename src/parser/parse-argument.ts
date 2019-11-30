@@ -1,6 +1,4 @@
-import { letter, anyCharOf, string } from 'parjs';
-import { many, between, map, or, qthen } from 'parjs/combinators';
-import { ParjsError } from 'parjs/errors';
+import P from 'parsimmon';
 
 export interface Argument {
   required: boolean;
@@ -10,62 +8,65 @@ export interface Argument {
   raw: string;
 }
 
-class InvalidIdentifier extends ParjsError {}
+const parser = P.createLanguage({
+  // any-argument-name
+  Identifier() {
+    return P.alt(P.string('-'), P.string('_'), P.letter)
+      .atLeast(1)
+      .map(characters => ({
+        name: characters.join(''),
+        variadic: false,
+        required: false,
+      }))
+      .chain(arg => {
+        if (/^_/.test(arg.name)) {
+          return P.fail(`Names can't start with an underscore.`);
+        }
 
-// any-argument-name
-const identifier = many()(letter().pipe(or(anyCharOf('-_'))))
-  .pipe(
-    map(letters => ({
-      name: letters.join(''),
-      variadic: false,
-    }))
-  )
-  .pipe(
-    map(arg => {
-      if (/^_/.test(arg.name)) {
-        throw new InvalidIdentifier(`Names can't start with an underscore.`);
-      }
+        if (/^-/.test(arg.name)) {
+          return P.fail(`Names can't start with a hyphen.`);
+        }
 
-      if (/^-/.test(arg.name)) {
-        throw new InvalidIdentifier(`Names can't start with a hyphen.`);
-      }
+        return P.of(arg);
+      });
+  },
 
-      return arg;
-    })
-  );
-
-// ...multiple-arguments
-const variadic = string('...')
-  .pipe(qthen(identifier))
-  .pipe(
-    map(arg => ({
+  // ...multiple-arguments
+  Variadic({ Identifier }) {
+    return P.seq(P.string('...'), Identifier).map(([, arg]) => ({
       ...arg,
       variadic: true,
-    }))
-  );
+    }));
+  },
 
-const potentiallyVariadic = variadic.pipe(or(identifier));
+  MaybeVariadic({ Identifier, Variadic }) {
+    return P.alt(Variadic, Identifier);
+  },
 
-// <required-argument>
-const requiredArgument = potentiallyVariadic
-  .pipe(between('<', '>'))
-  .pipe(map(arg => ({ ...arg, required: true })));
+  // <required-argument>
+  RequiredArgument({ MaybeVariadic }) {
+    return P.seq(P.string('<'), MaybeVariadic, P.string('>')).map(
+      ([, arg]) => ({
+        ...arg,
+        required: true,
+      })
+    );
+  },
 
-// [optional-argument]
-const optionalArgument = potentiallyVariadic
-  .pipe(between('[', ']'))
-  .pipe(map(arg => ({ ...arg, required: false })));
+  // [optional-argument]
+  OptionalArgument({ MaybeVariadic }) {
+    return P.seq(P.string('['), MaybeVariadic, P.string(']')).map(
+      ([, arg]) => arg
+    );
+  },
 
-const argument = requiredArgument.pipe(or(optionalArgument));
+  Argument({ RequiredArgument, OptionalArgument }) {
+    return P.alt(RequiredArgument, OptionalArgument);
+  },
+});
 
 export const parseArgument = (input: string): Argument => {
-  const parsed = argument.parse(input);
-
-  if (!parsed.isOk) {
-    throw new SyntaxError(parsed.toString());
-  }
-
-  const { required, variadic, name } = parsed.value;
+  const { required, variadic, name } = parser.Argument.tryParse(input);
 
   return {
     type: 'Argument',
