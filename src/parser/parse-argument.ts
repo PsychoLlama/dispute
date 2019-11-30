@@ -1,5 +1,6 @@
 import { letter, anyCharOf, string } from 'parjs';
 import { many, between, map, or, qthen } from 'parjs/combinators';
+import { ParjsError } from 'parjs/errors';
 
 export interface Argument {
   required: boolean;
@@ -9,13 +10,29 @@ export interface Argument {
   raw: string;
 }
 
+class InvalidIdentifier extends ParjsError {}
+
 // any-argument-name
-const identifier = many()(letter().pipe(or(anyCharOf('-_')))).pipe(
-  map(letters => ({
-    name: letters.join(''),
-    variadic: false,
-  }))
-);
+const identifier = many()(letter().pipe(or(anyCharOf('-_'))))
+  .pipe(
+    map(letters => ({
+      name: letters.join(''),
+      variadic: false,
+    }))
+  )
+  .pipe(
+    map(arg => {
+      if (/^_/.test(arg.name)) {
+        throw new InvalidIdentifier(`Names can't start with an underscore.`);
+      }
+
+      if (/^-/.test(arg.name)) {
+        throw new InvalidIdentifier(`Names can't start with a hyphen.`);
+      }
+
+      return arg;
+    })
+  );
 
 // ...multiple-arguments
 const variadic = string('...')
@@ -48,11 +65,13 @@ export const parseArgument = (input: string): Argument => {
     throw new SyntaxError(parsed.toString());
   }
 
+  const { required, variadic, name } = parsed.value;
+
   return {
     type: 'Argument',
-    variadic: parsed.value.variadic,
-    name: parsed.value.name,
-    required: parsed.value.required,
+    required,
+    variadic,
+    name,
     raw: input,
   };
 };

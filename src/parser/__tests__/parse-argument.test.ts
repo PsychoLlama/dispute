@@ -39,16 +39,16 @@ describe('parseArgument', () => {
       expect(argument.name).toBe('PascalCase');
     });
 
-    it.skip('throws if the name begins with a hyphen', () => {
+    it('throws if the name begins with a hyphen', () => {
       const fail = () => parseArgument('<-argument>');
 
-      expect(fail).toThrow(SyntaxError);
+      expect(fail).toThrow(/hyphen/i);
     });
 
-    it.skip('throws if the name begins with an underline', () => {
+    it('throws if the name begins with an underline', () => {
       const fail = () => parseArgument('<_argument>');
 
-      expect(fail).toThrow(SyntaxError);
+      expect(fail).toThrow(/underscore/i);
     });
   });
 
