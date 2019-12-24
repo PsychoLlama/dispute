@@ -3,7 +3,7 @@ import { createCli } from '../dispute';
 
 // Only mock `handleKnownErrors`.
 jest.mock('../error-utils', () => {
-  const module = require.requireActual('../error-utils');
+  const module = (require as any).requireActual('../error-utils');
 
   return {
     ...module,
