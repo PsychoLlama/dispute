@@ -4,8 +4,8 @@
   "description": "Command line argument parser",
   "main": "dist/dispute.js",
   "scripts": {
-    "test": "jest",
-    "lint": "eslint src --ext .ts,.js",
+    "test": "jest --color",
+    "lint": "eslint src --ext .ts,.js --color",
     "build": "tsc",
     "prepublishOnly": "yarn -s build",
     "ci": "./run-ci-test-suite"
