@@ -4,7 +4,7 @@
   <p>A tool for building command line interfaces.</p>
 
   <div>
-    <a href="https://travis-ci.org/PsychoLlama/dispute"><img alt="Travis CI master build status" src="https://img.shields.io/travis/PsychoLlama/dispute/master.svg?style=popout-square" /></a>
+    <a href="https://github.com/PsychoLlama/dispute/actions?query=workflow%3A%22Continuous+Integration%22"><img alt="GitHub workflow master build status" src="https://img.shields.io/github/workflow/status/PsychoLlama/dispute/Continuous%20Integration/master?style=flat-square" /></a>
     <a href="https://www.npmjs.com/package/dispute"><img alt="npm package version" src="https://img.shields.io/npm/v/dispute.svg?style=popout-square" /></a>
     <img alt="npm type definitions" src="https://img.shields.io/npm/types/dispute.svg?style=popout-square" />
   </div>
