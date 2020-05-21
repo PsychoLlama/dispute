@@ -12,7 +12,7 @@ const indexOptionsByName = (options: CommandOptions) => {
       return letter.toUpperCase();
     });
 
-  Object.keys(options).forEach(optionName => {
+  Object.keys(options).forEach((optionName) => {
     const { long, short } = options[optionName].usage;
 
     if (long) index.set(camelCase(long), optionName);
@@ -58,7 +58,7 @@ export default function createApi(commandTree: CommandTree) {
     ? wrapCommand(commandTree.command, commandTree.options)
     : Object.create(null);
 
-  Object.keys(commandTree.subCommands).forEach(commandName => {
+  Object.keys(commandTree.subCommands).forEach((commandName) => {
     const command = commandTree.subCommands[commandName];
     api[commandName] = createApi(command);
   });

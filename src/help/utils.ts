@@ -6,9 +6,7 @@ export const sortAlphabetically = (a: string, b: string) => (a > b ? 1 : -1);
 
 // Create a string of nothing but whitespace.
 export const whitespace = (charCount: number) =>
-  Array(charCount)
-    .fill(' ')
-    .join('');
+  Array(charCount).fill(' ').join('');
 
 // Find the longest string, returning a function that adds whitespace
 // to the given string so it matches the size of the longest.

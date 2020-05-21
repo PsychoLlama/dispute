@@ -15,7 +15,7 @@ export default function parseCommandUsage(usage: string): Argument[] {
   const args: Argument[] = [];
 
   const assertValidArgumentOrdering = (arg: ArgToken) => {
-    const precededByOptional = args.find(arg => !arg.required);
+    const precededByOptional = args.find((arg) => !arg.required);
     if (!arg.required || !precededByOptional) return;
     throw tokenizer.reportToken(arg, `Required arguments should come first.`);
   };

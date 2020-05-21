@@ -13,7 +13,7 @@ export default function describeSubCommands(
   });
 
   return commandNames
-    .map(commandName => {
+    .map((commandName) => {
       const command = commands[commandName];
       const description = command.description || '';
 

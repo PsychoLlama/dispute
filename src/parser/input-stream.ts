@@ -27,15 +27,11 @@ interface FrameDetails {
 }
 
 export const createErrorFrame = (frame: FrameDetails) => {
-  const offset = Array(frame.loc.column)
-    .fill(' ')
-    .join('');
+  const offset = Array(frame.loc.column).fill(' ').join('');
 
   // Generate a syntax highlight.
   // Something like '  ^^^^^^^^^'
-  const underline = Array(frame.length)
-    .fill('^')
-    .join('');
+  const underline = Array(frame.length).fill('^').join('');
 
   const highlight = offset + chalk.red(underline);
 

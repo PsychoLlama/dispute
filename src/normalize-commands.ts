@@ -232,7 +232,7 @@ const enforceOptionUniqueness = ({
     );
   };
 
-  Object.keys(options).forEach(optionName => {
+  Object.keys(options).forEach((optionName) => {
     const option = options[optionName];
     const { short, long } = option.usage;
 

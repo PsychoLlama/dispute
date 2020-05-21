@@ -43,7 +43,7 @@ const formatLongFlag = ({ usage }: CommandOption) => {
 // -1337, --option3
 export const describeOptions = (options: CommandOptions) => {
   const sortedOptions = Object.keys(options)
-    .map(option => options[option])
+    .map((option) => options[option])
     .sort(sortOptionsAlphabetically);
 
   const shortFlags = sortedOptions.map(formatShortFlag);

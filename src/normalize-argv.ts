@@ -8,7 +8,7 @@ const isConjoinedWithValue = (argument: string) => /^--\w+?=/.test(argument);
 export default function normalizeArgv(argv: string[]): string[] {
   const normalized: string[] = [];
 
-  argv.forEach(arg => {
+  argv.forEach((arg) => {
     if (isConjoinedWithValue(arg)) {
       const [flag, ...argumentParts] = arg.split('=');
       const argument = argumentParts.join('=');
@@ -28,7 +28,7 @@ export default function normalizeArgv(argv: string[]): string[] {
     // several independent flags (-x -z -v -f).
     if (isShortFlag(arg) && arg.length > 2) {
       const characters = arg.replace(/^-/, '').split('');
-      const independentFlags = characters.map(flag => `-${flag}`);
+      const independentFlags = characters.map((flag) => `-${flag}`);
 
       return normalized.push(...independentFlags);
     }

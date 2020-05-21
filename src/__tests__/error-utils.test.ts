@@ -145,7 +145,7 @@ describe('handleKnownErrors(...)', () => {
       throw new Error(message);
     });
 
-    const error = await wrapped().catch(error => error);
+    const error = await wrapped().catch((error) => error);
 
     expect(error).toEqual(expect.any(Error));
     expect(options.log).toHaveBeenCalledWith(error);
