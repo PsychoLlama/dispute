@@ -19,5 +19,8 @@
     "node_modules",
     "**/__tests__/**",
     "dist"
+  ],
+  "files": [
+    "./src/minimalistic-assert.d.ts"
   ]
 }
