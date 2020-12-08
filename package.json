@@ -20,6 +20,68 @@
       "eslint"
     ]
   },
+  "prettier": {
+    "singleQuote": true,
+    "trailingComma": "es5"
+  },
+  "jest": {
+    "testMatch": [
+      "<rootDir>/src/**/__tests__/*.test.ts"
+    ],
+    "collectCoverageFrom": [
+      "<rootDir>/src/**/*.js",
+      "!**/node_modules/**"
+    ],
+    "coverageReporters": [
+      "html"
+    ],
+    "testEnvironment": "node",
+    "collectCoverage": true,
+    "transform": {
+      "^.+\\.ts$": "ts-jest"
+    },
+    "coverageThreshold": {
+      "global": {
+        "statements": 100,
+        "functions": 100,
+        "branches": 100,
+        "lines": 100
+      }
+    }
+  },
+  "eslintConfig": {
+    "overrides": [
+      {
+        "files": "**/__tests__/*.test.ts",
+        "rules": {
+          "@typescript-eslint/no-explicit-any": "off"
+        },
+        "env": {
+          "jest": true
+        }
+      }
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/recommended",
+      "plugin:prettier/recommended",
+      "prettier/@typescript-eslint"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "env": {
+      "node": true,
+      "es6": true
+    },
+    "parserOptions": {
+      "sourceType": "module"
+    },
+    "rules": {
+      "@typescript-eslint/explicit-module-boundary-types": "off",
+      "@typescript-eslint/no-use-before-define": "off",
+      "@typescript-eslint/no-empty-function": "off",
+      "@typescript-eslint/no-explicit-any": "off"
+    }
+  },
   "engines": {
     "node": ">=8.0.0"
   },
