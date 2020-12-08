@@ -4,7 +4,7 @@
   "description": "Command line argument parser",
   "main": "dist/dispute.js",
   "scripts": {
-    "test": "./run-ci-test-suite",
+    "test": "./bin/run-tests",
     "test:unit": "jest --color",
     "test:lint": "eslint src --ext .ts,.js --color",
     "prepare": "tsc",
