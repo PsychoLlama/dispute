@@ -4,11 +4,11 @@
   "description": "Command line argument parser",
   "main": "dist/dispute.js",
   "scripts": {
-    "test": "jest --color",
-    "lint": "eslint src --ext .ts,.js --color",
-    "build": "tsc",
-    "prepublishOnly": "yarn -s build",
-    "ci": "./run-ci-test-suite"
+    "test": "./run-ci-test-suite",
+    "test:unit": "jest --color",
+    "test:lint": "eslint src --ext .ts,.js --color",
+    "prepare": "tsc",
+    "prepublishOnly": "yarn -s build"
   },
   "husky": {
     "hooks": {

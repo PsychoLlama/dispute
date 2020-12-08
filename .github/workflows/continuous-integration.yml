@@ -20,4 +20,4 @@ jobs:
       - name: Install libraries
         run: yarn install --color
       - name: Run tests
-        run: yarn -s ci
+        run: yarn -s test
