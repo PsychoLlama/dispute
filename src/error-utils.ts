@@ -75,16 +75,20 @@ interface ErrorHandlerOptions {
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ReturnType<Fn extends Function> = Fn extends (...args: any[]) => infer T
+type ReturnType<Fn extends (...args: any) => any> = Fn extends (
+  ...args: any[]
+) => infer T
   ? T
   : never;
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
-type ArgumentType<Fn extends Function> = Fn extends (...args: infer T) => any
+type ArgumentType<Fn extends (...args: any) => any> = Fn extends (
+  ...args: infer T
+) => any
   ? T
   : never;
 
-export const handleKnownErrors = <Fn extends Function>(
+export const handleKnownErrors = <Fn extends (...args: any) => any>(
   options: ErrorHandlerOptions,
   fn: Fn
 ) => async (...args: ArgumentType<Fn>): Promise<ReturnType<Fn>> => {
@@ -92,7 +96,7 @@ export const handleKnownErrors = <Fn extends Function>(
   const { log = DEFAULT_ERROR_LOG } = options;
 
   try {
-    return await fn(...args);
+    return await fn(...(args as any));
   } catch (error) {
     if (!isKnownError(error)) {
       log(error);

@@ -1,7 +1,7 @@
 import normalizeConfig from '../../normalize-config';
 import { describeOptions } from '../options';
 
-const createConfig = (config: object) =>
+const createConfig = <T>(config: T) =>
   normalizeConfig({
     packageJson: { version: '1.2.3' },
     commandName: 'unit-test',
@@ -9,7 +9,7 @@ const createConfig = (config: object) =>
   });
 
 describe('Option help output', () => {
-  const getOptionsHelp = (options: object) => {
+  const getOptionsHelp = <T>(options: T) => {
     const { cli } = createConfig({
       command() {},
       options,

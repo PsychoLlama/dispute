@@ -1,4 +1,4 @@
-const diff = async (options: {}, rev: string) => {
+const diff = async (options: Record<string, never>, rev: string) => {
   if (rev) {
     return `Diff at revision "${rev}"`;
   }

@@ -1,7 +1,7 @@
 import normalizeConfig from '../normalize-commands';
 import resolveInvocation from '../argv-resolver';
 
-const resolve = (config: object, argv: string[]) =>
+const resolve = <T>(config: T, argv: string[]) =>
   resolveInvocation(normalizeConfig(config), argv);
 
 describe('argv resolver', () => {

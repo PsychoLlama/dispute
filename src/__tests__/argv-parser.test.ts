@@ -2,7 +2,7 @@ import * as parseValue from '../parse-value';
 import normalize, { normalizeOptions } from '../normalize-commands';
 import parseArgv from '../argv-parser';
 
-const parse = (config: object, argv: any[], globalOptions = {}) =>
+const parse = <T>(config: T, argv: any[], globalOptions = {}) =>
   parseArgv(
     normalize({ command() {}, ...config }),
     normalizeOptions({ options: globalOptions, commandPath: [] }),

@@ -1,7 +1,7 @@
 import normalizeConfig from '../../normalize-config';
 import generateHelpPage from '../index';
 
-const createConfig = (config?: object) =>
+const createConfig = <T>(config?: T) =>
   normalizeConfig({
     packageJson: { version: '1.2.3' },
     commandName: 'unit-test',

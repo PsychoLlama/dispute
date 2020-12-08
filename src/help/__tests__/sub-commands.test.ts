@@ -1,7 +1,7 @@
 import normalizeConfig from '../../normalize-config';
 import describeSubCommands from '../sub-commands';
 
-const createConfig = (config?: object) => {
+const createConfig = <T>(config?: T) => {
   const { cli } = normalizeConfig({
     packageJson: { version: '1.2.3' },
     cli: { command() {}, ...config },

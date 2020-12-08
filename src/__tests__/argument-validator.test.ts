@@ -1,7 +1,7 @@
 import validateArguments from '../argument-validator';
 import normalizeConfig from '../normalize-commands';
 
-const validate = (config: object, args: any[]) => {
+const validate = <T>(config: T, args: any[]) => {
   const commandTree = normalizeConfig({ command() {}, ...config });
   return validateArguments(commandTree, args);
 };

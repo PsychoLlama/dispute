@@ -42,9 +42,10 @@ const normalizeOptions = (givenOptions: any, options: CommandOptions) => {
 
 // Reverse the argument order. Instead of `(options, ...args)`
 // accept `(...args, options?)`.
-const wrapCommand = (command: Function, optionsDefinition: CommandOptions) => (
-  ...args: any[]
-) => {
+const wrapCommand = <Command extends (...args: any) => any>(
+  command: Command,
+  optionsDefinition: CommandOptions
+) => (...args: any[]) => {
   const passedOptions = typeof args[args.length - 1] === 'object';
   const options = passedOptions ? args[args.length - 1] : {};
   const params = passedOptions ? args.slice(0, -1) : args;

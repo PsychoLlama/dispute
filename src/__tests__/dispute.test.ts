@@ -3,7 +3,7 @@ import { createCli } from '../dispute';
 
 // Only mock `handleKnownErrors`.
 jest.mock('../error-utils', () => {
-  const module = (require as any).requireActual('../error-utils');
+  const module = jest.requireActual('../error-utils');
 
   return {
     ...module,
@@ -18,7 +18,7 @@ describe('Dispute', () => {
   beforeEach(() => {
     jest.clearAllMocks();
     (handleKnownErrors as any).mockImplementation(
-      (_options: object, fn: Function) => fn
+      <A, B>(_options: A, fn: B) => fn
     );
   });
 
@@ -108,7 +108,7 @@ describe('Dispute', () => {
   });
 
   describe('createTestInterface', () => {
-    const createTestInterface = (commands: object) => {
+    const createTestInterface = <T>(commands: T) => {
       const cli = createCli({ commandName, packageJson, cli: commands });
       return cli.createTestInterface();
     };
