@@ -4,12 +4,6 @@
   ],
   "packageRules": [
     {
-      "matchUpdateTypes": [
-        "major",
-        "minor",
-        "patch",
-        "digest"
-      ],
       "matchDepTypes": [
         "devDependencies"
       ],
