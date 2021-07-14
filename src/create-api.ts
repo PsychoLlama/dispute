@@ -42,17 +42,19 @@ const normalizeOptions = (givenOptions: any, options: CommandOptions) => {
 
 // Reverse the argument order. Instead of `(options, ...args)`
 // accept `(...args, options?)`.
-const wrapCommand = <Command extends (...args: any) => any>(
-  command: Command,
-  optionsDefinition: CommandOptions
-) => (...args: any[]) => {
-  const passedOptions = typeof args[args.length - 1] === 'object';
-  const options = passedOptions ? args[args.length - 1] : {};
-  const params = passedOptions ? args.slice(0, -1) : args;
-  const normalizedOptions = normalizeOptions(options, optionsDefinition);
+const wrapCommand =
+  <Command extends (...args: any) => any>(
+    command: Command,
+    optionsDefinition: CommandOptions
+  ) =>
+  (...args: any[]) => {
+    const passedOptions = typeof args[args.length - 1] === 'object';
+    const options = passedOptions ? args[args.length - 1] : {};
+    const params = passedOptions ? args.slice(0, -1) : args;
+    const normalizedOptions = normalizeOptions(options, optionsDefinition);
 
-  return command(normalizedOptions, ...params);
-};
+    return command(normalizedOptions, ...params);
+  };
 
 export default function createApi(commandTree: CommandTree) {
   const api = commandTree.command

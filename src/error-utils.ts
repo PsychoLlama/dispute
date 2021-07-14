@@ -40,18 +40,14 @@ export class FatalError extends ExitCode {
 }
 
 // I hate names like these. How did my life get here.
-export const makeParseErrorFactory = ({
-  flag,
-  prefix = 'Invalid value',
-}: {
-  flag: string;
-  prefix?: string;
-}) => (msg: string) => {
-  const trace = `at ${chalk.blue(flag)}`;
-  const errorPrefix = `${chalk.red(prefix)} ${trace}`;
+export const makeParseErrorFactory =
+  ({ flag, prefix = 'Invalid value' }: { flag: string; prefix?: string }) =>
+  (msg: string) => {
+    const trace = `at ${chalk.blue(flag)}`;
+    const errorPrefix = `${chalk.red(prefix)} ${trace}`;
 
-  return new FatalError(`${errorPrefix}: ${msg}`);
-};
+    return new FatalError(`${errorPrefix}: ${msg}`);
+  };
 
 // Check the error for a secret flag.
 export const isKnownError = <T>(error: T) => {
@@ -88,29 +84,28 @@ type ArgumentType<Fn extends (...args: any) => any> = Fn extends (
   ? T
   : never;
 
-export const handleKnownErrors = <Fn extends (...args: any) => any>(
-  options: ErrorHandlerOptions,
-  fn: Fn
-) => async (...args: ArgumentType<Fn>): Promise<ReturnType<Fn>> => {
-  /* istanbul ignore next */
-  const { log = DEFAULT_ERROR_LOG } = options;
+export const handleKnownErrors =
+  <Fn extends (...args: any) => any>(options: ErrorHandlerOptions, fn: Fn) =>
+  async (...args: ArgumentType<Fn>): Promise<ReturnType<Fn>> => {
+    /* istanbul ignore next */
+    const { log = DEFAULT_ERROR_LOG } = options;
 
-  try {
-    return await fn(...(args as any));
-  } catch (error) {
-    if (!isKnownError(error)) {
-      log(error);
-      process.exit(1);
+    try {
+      return await fn(...(args as any));
+    } catch (error) {
+      if (!isKnownError(error)) {
+        log(error);
+        process.exit(1);
+
+        return createHandledRejection(error);
+      }
+
+      if (error[ENABLE_ERROR_LOGGING]) {
+        log(error.message);
+      }
+
+      process.exit(error.exitCode);
 
       return createHandledRejection(error);
     }
-
-    if (error[ENABLE_ERROR_LOGGING]) {
-      log(error.message);
-    }
-
-    process.exit(error.exitCode);
-
-    return createHandledRejection(error);
-  }
-};
+  };
