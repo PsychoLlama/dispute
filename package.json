@@ -117,7 +117,7 @@
   },
   "dependencies": {
     "chalk": "^4.0.0",
-    "indent-string": "^4.0.0",
+    "indent-string": "^5.0.0",
     "minimalistic-assert": "^1.0.1"
   }
 }
