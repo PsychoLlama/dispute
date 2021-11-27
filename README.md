@@ -10,6 +10,14 @@
   </div>
 </div>
 
+## Project Status
+:no_entry: UNMAINTAINED
+
+I am using [oclif](https://oclif.io/) these days. It's pretty great and
+supports far more features than dispute with similar advantages. In an effort
+to narrow my focus to more meaningful hobby projects, I'm no longer
+maintaining dispute.
+
 ## Purpose
 Dispute is a modern alternative to
 [commander](https://www.npmjs.com/package/commander) and
